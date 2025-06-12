@@ -1,0 +1,24 @@
+/* Css para el componente Select. */
+
+.select-container {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  margin: 8px 0;
+}
+
+.select-container label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 1.25rem;
+}
+
+.select-container select {
+  /* width: min(500px, 100%); */
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1.25rem;
+  background-color: #fff;
+}

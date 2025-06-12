@@ -1,0 +1,24 @@
+/* Estilos para el componente Input */
+
+.input-container {
+    /* width: 100%; */
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 0.5rem;
+    gap: 5px;
+    /* width: min(400px, 100%); */
+}
+
+.input-container label {
+    font-weight: bolder;
+    font-size: 1.3rem;
+}
+
+.input-container input {
+    width: 100%;
+    padding: 0.5rem;
+    font-size: 1.3rem;
+    border-radius: 4px;
+    transition: border-color 0.3s ease;
+}
