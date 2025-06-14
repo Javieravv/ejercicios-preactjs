@@ -21,18 +21,35 @@ const CustomSelect = ({
     const [isOptionsVisible, setIsOptionsVisible] = useState(false)
     const [selectedOption, setSelectedOption] = useState<SelectOption | null>({ value: '', label: 'Selecciona una opción' })
     const [highlightedIndex, setHighlightedIndex] = useState(0)
+    const [searchBuffer, setSearchBuffer] = useState<string>('')
     const optionRefs = useRef<(HTMLLIElement | null)[]>([]);
+    const searchTimeOut = useRef<number | null>(null);
 
 
     // Efecto para mostrar resaltada la primera opción o la que ya se escogió
+    // useEffect(() => {
+    //     if (isOptionsVisible && highlightedIndex !== null) {
+    //         const selectedIndex = selectOptions.findIndex(opt => opt.value === selectedOption?.value);
+    //         const el = optionRefs.current[highlightedIndex];
+    //         el?.scrollIntoView({ block: 'nearest' });
+    //         setHighlightedIndex(selectedIndex >= 0 ? selectedIndex : 0);
+    //     }
+    // }, [isOptionsVisible, highlightedIndex]);
+
     useEffect(() => {
-        if (isOptionsVisible && highlightedIndex !== null) {
+        if (isOptionsVisible) {
             const selectedIndex = selectOptions.findIndex(opt => opt.value === selectedOption?.value);
-            const el = optionRefs.current[highlightedIndex];
-            el?.scrollIntoView({ block: 'nearest' });
             setHighlightedIndex(selectedIndex >= 0 ? selectedIndex : 0);
         }
-    }, [isOptionsVisible, highlightedIndex]);
+    }, [isOptionsVisible]);
+
+
+    useEffect(() => {
+        if (isOptionsVisible && optionRefs.current[highlightedIndex]) {
+            optionRefs.current[highlightedIndex]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        }
+    }, [highlightedIndex, isOptionsVisible]);
+
 
 
     const handleWrapperClick = () => {
@@ -49,10 +66,39 @@ const CustomSelect = ({
         })
     }
 
-    // Código para manejo del tecado
-    const handleKeyDown = (e: KeyboardEvent) => {
-        // if (!isOptionsVisible) return;
+    const appendToSearchBuffer = (char: string) => {
+        if (searchTimeOut.current) clearTimeout(searchTimeOut.current);
+        const newBuffer = searchBuffer + char.toLowerCase();
+        setSearchBuffer(newBuffer);
+        searchTimeOut.current = setTimeout(() => {
+            setSearchBuffer('');
+        }, 1000);
+        console.log('Buffer de búsqueda actualizado:', newBuffer);
+        return newBuffer;
+    }
 
+    // Código para que el componente sea accesible con el teclado
+    // y se pueda navegar con las flechas del teclado
+    // También para capturar la letra que se pulse y hacer una búsqueda
+    const handleKeyDown = (e: KeyboardEvent) => {
+        // Si se pulsa una letra o un número, buscamos la opción que empiece por esa letra
+        if (e.key.length === 1 && /^[a-zA-ZñÑáéíóúüÁÉÍÓÚÜ]$/.test(e.key)) {
+            const nextBuffer = appendToSearchBuffer(e.key);
+            const index = selectOptions.findIndex(opt =>
+                opt.label.trim().toLowerCase().startsWith(nextBuffer)
+            );
+
+            if (index >= 0) {
+                setHighlightedIndex(() => {
+                    setSelectedOption({ ...selectOptions[index], selected: true });
+                    return index;
+                });
+
+            }
+        }
+
+        // Si se pulsa una tecla que no es Enter, Escape, ArrowDown o ArrowUp,
+        //  no hacemos nada
         switch (e.key) {
             case 'ArrowDown':
                 e.preventDefault(); // evita scroll en la página
@@ -61,7 +107,6 @@ const CustomSelect = ({
                     setSelectedOption({ ...selectOptions[nextIndex], selected: true });
                     return nextIndex;
                 });
-                console.log('Valor actual: ', selectedOption)
                 break;
 
             case 'ArrowUp':
@@ -84,9 +129,6 @@ const CustomSelect = ({
                 break;
         }
     };
-
-    console.log(optionRefs.current)
-
 
     return (
         <div

@@ -12,6 +12,7 @@ const selectOptionsCountries = [
    { value: '7', label: 'Brasil' },
    { value: '8', label: 'Uruguay' },
    { value: '9', label: 'Paraguay' },
+   { value: '10', label: 'Costa Rica' },
 ]
 
 
@@ -25,6 +26,7 @@ const selectOptionsCities = [
    { value: '7', label: 'Brasilia' },
    { value: '8', label: 'Montevideo' },
    { value: '9', label: 'Asunción' },
+   { value: '10', label: 'La paz' },
 ]
 
 const selectOptionsFruits = [
@@ -37,6 +39,7 @@ const selectOptionsFruits = [
    { value: '7', label: 'Piña' },
    { value: '8', label: 'Uva' },
    { value: '9', label: 'Sandía' },
+   { value: '10', label: 'Guayaba' },
 ]
 
 export function App() {
