@@ -1,9 +1,12 @@
 /* Css para el componente de select personalizado */
+:root {
+    --borderRadius: 6px;
+}
 
 ul {
     list-style: none;
     padding: 0;
-    margin: 0;
+    margin: 0; 
 }
 
 /* Estilos para el select personalizado */
@@ -13,7 +16,7 @@ ul {
     /* max-width: 300px; */
     border: 1px solid black;
     padding: 8px 0px;
-    border-radius: 4px;
+    border-radius: var(--borderRadius);
     color: black;
     background-color: white;
     font-size: 1.25rem;
@@ -23,7 +26,8 @@ ul {
 }
 
 .select-wrapper.select-open {
-  z-index: 100; /* Mucho más alto para garantizar que se sobreponga */
+    z-index: 100;
+    /* Mucho más alto para garantizar que se sobreponga */
 }
 
 .select-trigger {
@@ -35,20 +39,28 @@ ul {
     position: absolute;
     width: 100%;
     top: calc(100% + 5px);
-    border-radius: 4px;
+    border-radius: var(--borderRadius);
     display: flex;
     flex-direction: column;
     gap: 5px;
-    max-height: 200px;
-    overflow: scroll;
+    max-height: 300px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    white-space: nowrap;
     /* display: none; */
-    transition: all 0.5s ease;
+    transition: all 0.75s ease;
     z-index: 10;
     background-color: white;
+    padding: 1px 5px;
 }
 
 .select-options-hidden {
     display: none;
+}
+
+.select-options-open-up {
+    top: auto;
+    bottom: calc(100% + 5px);
 }
 
 .select-option {
@@ -57,8 +69,8 @@ ul {
 }
 
 .select-option.highlighted {
-  background-color: rgba(0, 0, 255, 0.73);
-  font-weight: bold;
+    background-color: rgba(0, 0, 255, 0.73);
+    font-weight: bold;
 }
 
 .select-option:hover {
@@ -75,7 +87,7 @@ Código css para el Select Arrow
     top: 50%;
     transform: translateY(-50%);
     pointer-events: none;
-    transition: transform 0.2s ease;
+    transition: transform 0.45s ease;
 }
 
 .arrow-open {

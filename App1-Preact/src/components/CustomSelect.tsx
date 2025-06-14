@@ -11,19 +11,24 @@ interface SelectOption {
 interface CustomSelectProps {
     selectOptions: SelectOption[];
     selectLabel?: string;
+    onChange?: (value: string) => void;
 }
 
 const CustomSelect = ({
     selectOptions,
     selectLabel,
+    onChange
 }: CustomSelectProps
 ) => {
     const [isOptionsVisible, setIsOptionsVisible] = useState(false)
     const [selectedOption, setSelectedOption] = useState<SelectOption | null>({ value: '', label: 'Selecciona una opción' })
     const [highlightedIndex, setHighlightedIndex] = useState(0)
     const [searchBuffer, setSearchBuffer] = useState<string>('')
+    const [openDirection, setOpenDirection] = useState<'up' | 'down'>('down')
+
     const optionRefs = useRef<(HTMLLIElement | null)[]>([]);
     const searchTimeOut = useRef<number | null>(null);
+    const wrapperRef = useRef<HTMLDivElement | null>(null);
 
 
     // Efecto para mostrar resaltada la primera opción o la que ya se escogió
@@ -50,13 +55,19 @@ const CustomSelect = ({
         }
     }, [highlightedIndex, isOptionsVisible]);
 
-
-
+    // Efecto para establecer la opción seleccionada al cargar el componente
     const handleWrapperClick = () => {
-        setIsOptionsVisible(!isOptionsVisible)
-        console.log('Hemos clicado en el select', isOptionsVisible)
-    }
+        if (!isOptionsVisible && wrapperRef.current) {
 
+            const rect = wrapperRef.current.getBoundingClientRect();
+            const spaceBelow = window.innerHeight - rect.bottom;
+            const spaceAbove = rect.top;
+            setOpenDirection(spaceBelow < 300 && spaceAbove > 300 ? 'up' : 'down');
+        }
+        setIsOptionsVisible(prev => !prev);
+    };
+
+    // Efecto para establecer la opción al dar click en el select
     const handleOptionClick = (option: SelectOption, e?: MouseEvent | KeyboardEvent) => {
         if (e) e.stopPropagation()
         setIsOptionsVisible(false)
@@ -64,8 +75,10 @@ const CustomSelect = ({
             ...option,
             selected: true
         })
+        onChange?.(option?.value);
     }
 
+    // Función para añadir un carácter al buffer de búsqueda
     const appendToSearchBuffer = (char: string) => {
         if (searchTimeOut.current) clearTimeout(searchTimeOut.current);
         const newBuffer = searchBuffer + char.toLowerCase();
@@ -73,7 +86,6 @@ const CustomSelect = ({
         searchTimeOut.current = setTimeout(() => {
             setSearchBuffer('');
         }, 1000);
-        console.log('Buffer de búsqueda actualizado:', newBuffer);
         return newBuffer;
     }
 
@@ -91,6 +103,7 @@ const CustomSelect = ({
             if (index >= 0) {
                 setHighlightedIndex(() => {
                     setSelectedOption({ ...selectOptions[index], selected: true });
+                    onChange?.(selectOptions[index].value);
                     return index;
                 });
 
@@ -105,6 +118,7 @@ const CustomSelect = ({
                 setHighlightedIndex((prev) => {
                     const nextIndex = Math.min(prev + 1, selectOptions.length - 1);
                     setSelectedOption({ ...selectOptions[nextIndex], selected: true });
+                    onChange?.(selectOptions[nextIndex].value);
                     return nextIndex;
                 });
                 break;
@@ -114,6 +128,7 @@ const CustomSelect = ({
                 setHighlightedIndex((prev) => {
                     const nextIndex = Math.max(prev - 1, 0);
                     setSelectedOption({ ...selectOptions[nextIndex], selected: true });
+                    onChange?.(selectOptions[nextIndex].value);
                     return nextIndex;
                 });
                 break;
@@ -137,6 +152,7 @@ const CustomSelect = ({
             tabIndex={0}
             onBlur={() => setIsOptionsVisible(false)}
             onKeyDown={handleKeyDown}
+            ref={wrapperRef}
         >
             <span class="select-trigger">{selectedOption?.label}</span>
             {/* Flecha hacia abajo del select */}
@@ -149,7 +165,9 @@ const CustomSelect = ({
             </svg>
             {/* Aquí se muestra el componente Select */}
             <ul
-                class={`select-options ${!isOptionsVisible ? 'select-options-hidden' : ''}`} >
+                // class={`select-options ${!isOptionsVisible ? 'select-options-hidden' : ''}`} >
+                class={`select-options ${!isOptionsVisible ? 'select-options-hidden' : ''} ${openDirection === 'up' ? 'select-options-open-up' : ''}`}
+            >
                 {
                     selectOptions.map((option, index) => (
                         <li

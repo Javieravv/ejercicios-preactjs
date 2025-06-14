@@ -13,7 +13,16 @@ const selectPaises = [
   { value: '8', label: 'Uruguay' },
   { value: '9', label: 'Paraguay' },
   { value: '10', label: 'Guyana' },
-  { value: '11', label: 'Surinam' },
+  { value: '11', label: 'Panamá' },
+  { value: '12', label: 'Nicaragua' },
+  { value: '13', label: 'México' },
+  { value: '14', label: 'Honduras' },
+  { value: '15', label: 'El Salvador' },
+  { value: '16', label: 'Guatemala' },
+  { value: '17', label: 'Costa Rica' },
+  { value: '18', label: 'Cuba' },
+  { value: '19', label: 'República Dominicana' },
+  { value: '20', label: 'Puerto Rico' },
 ];
 
 const selectCiudades = [
