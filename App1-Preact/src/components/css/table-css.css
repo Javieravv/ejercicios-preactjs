@@ -21,12 +21,41 @@ thead {
     }
 }
 
+.th-head {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    height: 100%;
+}
+
+/* Flecha para ver la direccion la ordenación */
+.order-arrow {
+    width:  35px;
+    height: 35px;
+    /* pointer-events: none; */
+    transition: transform 0.5s ease, color 0.2s ease;
+}
+
+.arrow-sorted-up {
+    transform: rotate(0deg);
+}
+
+.arrow-sorted-down {
+    transform: rotate(180deg);
+}
+
 tbody {
     background-color: rgba(128, 128, 128, 0.198);
 }
 
 tbody tr {
     height: 50px;
+}
+
+tbody td {
+    margin-left: 10px;
 }
 
 /* Css para los botones de paginado */

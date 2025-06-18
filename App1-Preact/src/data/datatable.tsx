@@ -45,14 +45,14 @@ export const columnsTable: Column[] = [
     {
         label: "Fecha de Nacimiento",
         key: "fechaNacimiento",
-        width: "180px",
+        width: "250px",
         sortable: true,
         visible: true
     },
     {
         label: "Dirección",
         key: "direccion",
-        width: "380px",
+        width: "450px",
         sortable: true,
         visible: true
     },
