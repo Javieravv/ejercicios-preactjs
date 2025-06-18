@@ -3,6 +3,7 @@
 .table-container {
   width: 100%;
   overflow-x: auto;
+    margin-bottom: 0px;
 }
 
 table {
@@ -27,6 +28,56 @@ tbody {
 tbody tr {
     height: 50px;
 }
+
+/* Css para los botones de paginado */
+.tablepage-container {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    justify-content: flex-end;
+    align-items: center;
+    height: 50px;
+    background-color: rgb(97, 94, 94);
+    padding: 8px 15px;
+    color: white;
+}
+
+.btn-navigation-table {
+    min-width: 120px;
+    border: 0px;
+    border-radius: 5px;
+    padding: 5px 5px;
+    background-color: rgba(9, 9, 215, 0.802);
+    color: white;
+    font-weight: bolder;
+    font-size: 1rem;
+    cursor: pointer;
+    height: auto;
+
+    &:hover {
+        background-color: rgba(9, 9, 215, 0.448);
+    }
+}
+
+.btn-navigation-page {
+    height: 35px;
+    width:  35px;
+    border-radius: 50%;
+    background-color: rgba(9, 9, 215, 0.802);
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+}
+
+.btn-activepage {
+    background-color: white;
+    color: rgba(9, 9, 215, 0.802);
+}
+
 
 /* Css para el botón que aparece
  */
