@@ -87,8 +87,19 @@ export const Table = ({
                                 {columns.map((column) => {
                                     if (!column.visible) return null
                                     return (
-                                        <td key={column.key} style={{ width: column.width || 'auto' }}>
-                                            {column.render ? column.render(item) : item[column.key]}
+                                        <td
+                                            key={column.key}
+                                            style={{ width: column.width || 'auto' }}
+                                        >
+                                            <div
+                                                style={{
+                                                    padding: '0px 4px',
+                                                    display: 'flex',
+                                                    ...column.textAlignItem
+                                                }}
+                                            >
+                                                {column.render ? column.render(item) : item[column.key]}
+                                            </div>
                                         </td>
                                     )
                                 })}
