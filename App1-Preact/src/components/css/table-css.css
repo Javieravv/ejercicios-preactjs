@@ -1,9 +1,10 @@
 /* Código css para el componente table */
 
 .table-container {
-  width: 100%;
-  overflow-x: auto;
+    width: 100%;
+    overflow-x: auto;
     margin-bottom: 0px;
+    min-height: 250px;
 }
 
 table {
@@ -67,6 +68,11 @@ thead {
     justify-content: flex-end;
 }
 
+.th-filter-icon {
+    width: 20px;
+    height: 20px;
+}
+
 .btn-filter {
     font-size: 0.75rem;
     min-width: 80px;
@@ -86,7 +92,7 @@ thead {
 
 /* Flecha para ver la direccion la ordenación */
 .order-arrow {
-    width:  35px;
+    width: 35px;
     height: 35px;
     /* pointer-events: none; */
     transition: transform 0.5s ease, color 0.2s ease;
@@ -131,7 +137,7 @@ tbody td {
     border: 0px;
     border-radius: 5px;
     padding: 5px 5px;
-    background-color: rgba(9, 9, 215, 0.802);
+    background-color: #0408f7d3;
     color: white;
     font-weight: bolder;
     font-size: 1rem;
@@ -139,15 +145,15 @@ tbody td {
     height: auto;
 
     &:hover {
-        background-color: rgba(9, 9, 215, 0.448);
+        background-color: #0408f7d3;
     }
 }
 
 .btn-navigation-page {
     height: 35px;
-    width:  35px;
+    width: 35px;
     border-radius: 50%;
-    background-color: rgba(9, 9, 215, 0.802);
+    background-color: #0408f7d3;
     color: white;
     cursor: pointer;
     display: flex;
@@ -158,13 +164,13 @@ tbody td {
 
 .btn-activepage {
     background-color: white;
-    color: rgba(9, 9, 215, 0.802);
+    color: #0408f7d3;
 }
 
 
 /* Css para el botón que aparece
  */
- .button-row {
+.button-row {
     min-width: 60px;
     border: 0px;
     background-color: red;
@@ -172,4 +178,4 @@ tbody td {
     padding: 5px 8px;
     border-radius: 3px;
     margin: 0 auto;
- }
+}

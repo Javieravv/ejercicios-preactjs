@@ -8,6 +8,7 @@ const CustomTable = () => {
             <Table
                 columns={columnsTable}
                 data={dataTable}
+                pageSize={15}
             />
         </>
     )

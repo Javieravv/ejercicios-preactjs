@@ -1,7 +1,7 @@
 // Componente table personalizado
+import { useMemo, useState } from 'preact/hooks';
 import './css/table-css.css'
 import type { Column } from '../data/datatable';
-import { useMemo, useState } from 'preact/hooks';
 import { getVisiblePages } from './utils/utils';
 import { ChevronUpIcon, FilterIcon } from '@heroicons/react/solid';
 
@@ -14,7 +14,7 @@ interface TableProps {
 export const Table = ({
     data,
     columns,
-    pageSize = 9
+    pageSize = 10
 }: TableProps) => {
     const [currentPage, setCurrentPage] = useState(1)
     const [sortColumn, setSortColumn] = useState<string | null>(null)
@@ -23,15 +23,11 @@ export const Table = ({
     const [columnFilters, setColumnFilters] = useState<Record<string, string>>({})
     const [valueColumnFilter, setValueColumnFilter] = useState<string>('')
 
-    const totalPage = Math.ceil(data.length / pageSize)
-    const btnsPagesVisibles = getVisiblePages(currentPage, totalPage, 4)
-
     // Filtramos datos.
     const filteredData = useMemo(() => {
         return data.filter((item) => {
             return Object.entries(columnFilters).every(([key, value]) => {
                 const raw = item[key]
-                // console.log('key:', key, '| value:', value, '| item[key]:', raw);
                 if (!value) return true;
                 const cellValue = raw !== undefined && raw !== null
                     ? raw.toString().toLowerCase()
@@ -43,11 +39,7 @@ export const Table = ({
 
     // ordenamos los datos, si hay columna de ordenación.
     const sortedData = useMemo(() => {
-        console.log('Calculamos sorted Data!!!')
-        // if (!sortColumn) return data
         if (!sortColumn) return filteredData
-        // if (Object.entries(columnFilters).length === 0) { console.log('No hay filtros ...') }
-        // return [...data].sort((a, b) => {
         return [...filteredData].sort((a, b) => {
             const aVal = a[sortColumn]
             const bVal = b[sortColumn]
@@ -59,17 +51,14 @@ export const Table = ({
 
     // Paginamos
     const currentData = useMemo(() => {
-        console.log('calculamos curren Darta ')
         const startIndex = (currentPage - 1) * pageSize
         const endIndex = startIndex + pageSize
         return sortedData.slice(startIndex, endIndex)
     }, [sortedData, currentPage, pageSize])
 
-    console.log('Columnas a filtrar: ', columnFilters)
-    console.log('DATOS FILTRADOS....',filteredData)
-    console.log('DATOS ORDNADOS....',sortedData)
-
-    // console.log('Valor a filtrar: ', valueColumnFilter)
+    // Calculamos el total de páginas teniendo ya la data filtrada
+    const totalPage = Math.ceil(filteredData.length / pageSize)
+    const btnsPagesVisibles = getVisiblePages(currentPage, totalPage, 4)
 
     return (
         <>
@@ -101,11 +90,12 @@ export const Table = ({
                                             >{column.label}</span>
                                             {/* Flecha hacia abajo del select */}
                                             {sortColumn === column.key && (
-                                                <ChevronUpIcon class={`order-arrow ${sortDirection === 'asc' ? 'arrow-sorted-up' : 'arrow-sorted-down'} `} />
+                                                <ChevronUpIcon 
+                                                class={`order-arrow ${sortDirection === 'asc' ? 'arrow-sorted-up' : 'arrow-sorted-down'} `} />
                                             )}
                                             {column.filtered && (
                                                 <FilterIcon
-                                                    style={{ width: '16px', height: '16px' }}
+                                                    class='th-filter-icon'
                                                     onClick={() => {
                                                         setFilterActiveColumn(prev => prev === column.key ? null : column.key)
                                                     }}
