@@ -27,6 +27,7 @@ export const Table = ({
     const filteredData = useMemo(() => {
         return data.filter((item) => {
             return Object.entries(columnFilters).every(([key, value]) => {
+                console.log(`Key = ${key} Valor = ${value}`)
                 const raw = item[key]
                 if (!value) return true;
                 const cellValue = raw !== undefined && raw !== null
@@ -62,6 +63,33 @@ export const Table = ({
 
     return (
         <>
+            {/* Mostramos información sobre campos filtrados */}
+            {Object.entries(columnFilters).length !== 0 && (
+                <div className="info-datafilter">
+                    <span class='info-datafilter-descrip'>Filtrando por: </span>
+                    {Object.entries(columnFilters).map(([key, value]) => (
+                        <button
+                            key={key}
+                            class='info-datafilter-value'
+                            onClick={() => {
+                                setColumnFilters(prev => {
+                                    const updated = { ...prev };
+                                    delete updated[key];
+                                    return updated;
+                                });
+                            }}>
+                            {key} = "{value}"
+                        </button>
+                    ))}
+                    <button 
+                    key={'limpiartodo'} 
+                    class='info-datafilter-value'
+                    onClick={() => setColumnFilters({})}>
+                        Limpiar Todo
+                    </button>
+                </div>
+
+            )}
             <div class={`table-container`}>
                 <table>
                     {/* Encabezado de la tabla */}
@@ -75,6 +103,19 @@ export const Table = ({
                                         style={{ width: column.width || 'auto' }}
                                     >
                                         <div class="th-head">
+                                            {/* Aqui ira el boton para eliminar el filtro */}
+                                            {columnFilters[column.key] && (
+                                                <button
+                                                    class="clear-button-filter"
+                                                    onClick={() => {
+                                                        setColumnFilters(prev => {
+                                                            const updated = { ...prev };
+                                                            delete updated[column.key];
+                                                            return updated;
+                                                        });
+                                                    }}
+                                                >X</button>
+                                            )}
                                             <span
                                                 onClick={() => {
                                                     if (sortColumn !== column.key && column.sortable) {
@@ -90,8 +131,8 @@ export const Table = ({
                                             >{column.label}</span>
                                             {/* Flecha hacia abajo del select */}
                                             {sortColumn === column.key && (
-                                                <ChevronUpIcon 
-                                                class={`order-arrow ${sortDirection === 'asc' ? 'arrow-sorted-up' : 'arrow-sorted-down'} `} />
+                                                <ChevronUpIcon
+                                                    class={`order-arrow ${sortDirection === 'asc' ? 'arrow-sorted-up' : 'arrow-sorted-down'} `} />
                                             )}
                                             {column.filtered && (
                                                 <FilterIcon
@@ -108,6 +149,7 @@ export const Table = ({
                                                         type="text"
                                                         placeholder={`Filtrar por ${column.label}`}
                                                         value={valueColumnFilter}
+                                                        autofocus
                                                         onInput={(e) => {
                                                             const value = (e.target as HTMLInputElement).value
                                                             setValueColumnFilter(value)
@@ -170,6 +212,12 @@ export const Table = ({
                 </table>
             </div>
             <div className="tablepage-container">
+                {/* Colocar boton para resetear todos los filtors */}
+                {Object.entries(columnFilters).length !== 0 && (
+                    <button
+                        class='btn-navigation-table btn-reset-filtros'
+                        onClick={() => setColumnFilters({})}>Resetear Filtros</button>
+                )}
                 <button
                     class='btn-navigation-table'
                     onClick={() => setCurrentPage((prev) => prev > 1 ? prev - 1 : prev)}
