@@ -9,9 +9,9 @@ export interface Column {
     width?: string;
     sortable: boolean;
     visible: boolean;
+    filtered?: boolean;
     textAlignItem?: React.CSSProperties;
     render?: (row: any) => JSX.Element;
-    // formatNumber?: (row: any) => string | number; //para mostrar número formateado
 }
 
 export const columnsTable: Column[] = [
@@ -29,6 +29,7 @@ export const columnsTable: Column[] = [
         width: "280px",
         sortable: true,
         visible: true,
+        filtered: true,
         textAlignItem: { justifyContent: 'flex-start'  }
     },
     {
@@ -37,6 +38,7 @@ export const columnsTable: Column[] = [
         width: "280px",
         sortable: true,
         visible: true,
+        filtered: true,
         textAlignItem: { justifyContent: 'flex-start'  }
     },
     {
@@ -45,6 +47,7 @@ export const columnsTable: Column[] = [
         width: "400px",
         sortable: false,
         visible: true,
+        filtered: false,
         render: (row) => <span>{row.apellidos} {row.nombres}</span>,
         textAlignItem: { justifyContent: 'flex-start'  }
     },
@@ -55,6 +58,7 @@ export const columnsTable: Column[] = [
         sortable: true,
         visible: true,
         textAlignItem: { justifyContent: 'center'},
+        filtered: true,
         render: (row) => {
             const [year, month, day] = row.fechaNacimiento.split('-').map(Number);
             const dateRow = new Date(year, month - 1, day);
@@ -75,6 +79,7 @@ export const columnsTable: Column[] = [
         width: "80px",
         sortable: true,
         visible: true,
+        filtered: true,
         textAlignItem: { justifyContent: 'center'  }
     },
     {
@@ -84,6 +89,7 @@ export const columnsTable: Column[] = [
         sortable: true,
         visible: true,
         textAlignItem: { justifyContent: 'flex-end' },
+        filtered: true,
         render: (row) => {
             const numberFormat = new Intl.NumberFormat('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2, useGrouping: true }).format(row.salario);
             return <>{numberFormat}</>;
@@ -95,6 +101,7 @@ export const columnsTable: Column[] = [
         width: "450px",
         sortable: true,
         visible: true,
+        filtered: true,
         textAlignItem: { justifyContent: 'flex-start'  }
     },
     {
@@ -103,6 +110,7 @@ export const columnsTable: Column[] = [
         width: "200px",
         sortable: true,
         visible: true,
+        filtered: true,
         textAlignItem: { justifyContent: 'flex-end'  }
     },
     {
