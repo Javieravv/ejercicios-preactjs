@@ -4,6 +4,10 @@ import './css/table-css.css'
 import type { Column } from '../data/datatable';
 import { getColumnOrder, getColumnWidths, getVisiblePages } from './utils/utils';
 import { ChevronUpIcon, FilterIcon } from '@heroicons/react/solid';
+import TableFilteredFields from './TableFilteredFields';
+import TableHead from './TableHead';
+import TableButtons from './TableButtons';
+import TableBody from './TableBody';
 
 interface TableProps {
     data: any[];
@@ -155,202 +159,52 @@ export const Table = ({
     return (
         <>
             {/* Mostramos información sobre campos filtrados */}
-            {Object.entries(columnFilters).length !== 0 && (
-                <div className="info-datafilter">
-                    <span class='info-datafilter-descrip'>Filtrando por: </span>
-                    {Object.entries(columnFilters).map(([key, value]) => (
-                        <button
-                            key={key}
-                            class='info-datafilter-value'
-                            onClick={() => {
-                                setColumnFilters(prev => {
-                                    const updated = { ...prev };
-                                    delete updated[key];
-                                    return updated;
-                                });
-                            }}>
-                            {key} = "{value}"
-                        </button>
-                    ))}
-                    <button
-                        key={'limpiartodo'}
-                        class='info-datafilter-value'
-                        onClick={() => setColumnFilters({})}>
-                        Limpiar Todo
-                    </button>
-                </div>
-
-            )}
+            <TableFilteredFields
+                columnFilters={columnFilters}
+                setColumnFilters={setColumnFilters}
+            />
             {/* Inicio de la tabla */}
             <div class={`table-container`}>
                 <table>
                     {/* Encabezado de la tabla */}
-                    <thead>
-                        <tr>
-                            {columnsLocal.map((column, index) => {
-                                if (!column.visible) return
-                                return (
-                                    <th
-                                        draggable={!isResizing}
-                                        key={column.key}
-                                        style={{ width: `${columnsWitch[column.key]}` || '160px' }}
-                                        ref={el => thRefs.current[index] = el}
-                                        onDragStart={(e) => handleDragStart(e as DragEvent, index)}
-                                        onDragOver={(e) => handleDragOver(e)}
-                                        onDrop={(e) => handleDrop(e as DragEvent, index)}
-                                    >
-                                        <div class="th-head">
-                                            {/* Aqui ira el boton para eliminar el filtro */}
-                                            {columnFilters[column.key] && (
-                                                <button
-                                                    class="clear-button-filter"
-                                                    onClick={() => {
-                                                        setColumnFilters(prev => {
-                                                            const updated = { ...prev };
-                                                            delete updated[column.key];
-                                                            return updated;
-                                                        });
-                                                    }}
-                                                >X</button>
-                                            )}
-                                            <span
-                                                onClick={() => {
-                                                    if (sortColumn !== column.key && column.sortable) {
-                                                        setSortColumn(column.key)
-                                                        setSortDirection('asc')
-                                                        setFilterActiveColumn('')
-                                                    }
-
-                                                    if (sortColumn === column.key && column.sortable) {
-                                                        setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc')
-                                                    }
-                                                }}
-                                            >{column.label}</span>
-                                            {/* Flecha hacia abajo del select */}
-                                            {sortColumn === column.key && (
-                                                <ChevronUpIcon
-                                                    class={`order-arrow ${sortDirection === 'asc' ? 'arrow-sorted-up' : 'arrow-sorted-down'} `} />
-                                            )}
-                                            {column.filtered && (
-                                                <FilterIcon
-                                                    class='th-filter-icon'
-                                                    onClick={() => {
-                                                        setFilterActiveColumn(prev => prev === column.key ? null : column.key)
-                                                    }}
-                                                />
-                                            )}
-                                            {/* Aquí irá el div para el filtro */}
-                                            {(filterActiveColumn === column.key) && (
-                                                <div class='th-filter'>
-                                                    <input
-                                                        type="text"
-                                                        placeholder={`Filtrar por ${column.label}`}
-                                                        value={valueColumnFilter}
-                                                        autofocus
-                                                        onInput={(e) => {
-                                                            const value = (e.target as HTMLInputElement).value
-                                                            setValueColumnFilter(value)
-                                                        }}
-                                                    // onBlur={() => setFilterActiveColumn(null)}
-                                                    />
-                                                    <div class='th-filter-buttons'>
-                                                        <button
-                                                            class='btn-filter btn-filter-ok'
-                                                            onClick={() => {
-                                                                setColumnFilters(prev => ({ ...prev, [column.key]: valueColumnFilter }))
-                                                                setValueColumnFilter('')
-                                                                setFilterActiveColumn(null)
-                                                                setCurrentPage(1)
-                                                            }}
-                                                        >
-                                                            Filtrar</button>
-                                                        <button
-                                                            class='btn-filter btn-filter-cancel'
-                                                            onClick={() => {
-                                                                setValueColumnFilter('')
-                                                                setFilterActiveColumn(null)
-                                                            }}
-                                                        >Cancelar</button>
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </div>
-                                        {/* Botón para cambiar el ancho de la columna */
-                                            column.resizable && (
-                                                <div
-                                                    class='th-resizer'
-                                                    // onMouseDown={startResizing(column.key, index)}
-                                                    onPointerDown={(e) => {
-                                                        e.stopPropagation(); // Evitar que el evento se propague al th
-                                                        startResizing(column.key, index)(e)
-                                                    }}
-                                                    // onDragStart={(e) => e.stopPropagation()}
-                                                    // onClick={(e) => e.stopPropagation()}
-                                                    draggable={false}
-                                                ></div>
-                                            )
-                                        }
-                                    </th>
-                                )
-                            })}
-                        </tr>
-                    </thead>
+                    <TableHead 
+                        columnsLocal={columnsLocal}
+                        isResizing={isResizing}
+                        handleDragStart={handleDragStart}
+                        handleDragOver={handleDragOver}
+                        handleDrop={handleDrop}
+                        columnFilters={columnFilters}
+                        setColumnFilters={setColumnFilters}
+                        sortColumn={sortColumn}
+                        setSortColumn={setSortColumn}
+                        sortDirection={sortDirection}
+                        setSortDirection={setSortDirection}
+                        filterActiveColumn={filterActiveColumn}
+                        setFilterActiveColumn={setFilterActiveColumn}
+                        valueColumnFilter={valueColumnFilter}
+                        setValueColumnFilter={setValueColumnFilter}
+                        columnsWitch={columnsWitch}
+                        thRefs={thRefs}
+                        setCurrentPage={setCurrentPage}
+                        startResizing={startResizing}
+                    />
                     {/* Cuerpo de la tabla */}
-                    <tbody>
-                        {currentData.map((item, index) => (
-                            <tr key={item.id}>
-                                {columnsLocal.map((column) => {
-                                    if (!column.visible) return null
-                                    return (
-                                        <td
-                                            key={column.key}
-                                            style={{ width: `${columnsWitch[column.key]}` || '160px' }}
-                                        >
-                                            <div
-                                                style={{
-                                                    padding: '0px 4px',
-                                                    display: 'flex',
-                                                    ...column.textAlignItem
-                                                }}
-                                            >
-                                                {column.render ? column.render(item) : item[column.key]}
-                                            </div>
-                                        </td>
-                                    )
-                                })}
-                            </tr>
-                        ))}
-                    </tbody>
+                    <TableBody
+                        currentData={currentData}
+                        columnsLocal={columnsLocal}
+                        columnsWitch={columnsWitch}
+                    />
                 </table>
             </div>
-            <div className="tablepage-container">
-                {/* Colocar boton para resetear todos los filtors */}
-                {Object.entries(columnFilters).length !== 0 && (
-                    <button
-                        class='btn-navigation-table btn-reset-filtros'
-                        onClick={() => setColumnFilters({})}>Resetear Filtros</button>
-                )}
-                <button
-                    class='btn-navigation-table'
-                    onClick={() => setCurrentPage((prev) => prev > 1 ? prev - 1 : prev)}
-                >Ant.</button>
-                {
-                    btnsPagesVisibles.map(itembtn =>
-                        <div
-                            class={`btn-navigation-page ${itembtn === currentPage ? 'btn-activepage' : ''}`}
-                            onClick={() => {
-                                if (typeof itembtn !== 'number') return null
-                                setCurrentPage(itembtn)
-                            }}
-                        >
-                            {itembtn}
-                        </div>)
-                }
-                <button
-                    class='btn-navigation-table'
-                    onClick={() => setCurrentPage((prev) => prev < totalPage ? prev + 1 : prev)}
-                >Sig.</button>
-            </div>
+            {/* Mostramos los botones para paginado y reset filtros */}
+            <TableButtons
+                columnFilters={columnFilters}
+                setColumnFilters={setColumnFilters}
+                setCurrentPage={setCurrentPage}
+                btnsPagesVisibles={btnsPagesVisibles}
+                currentPage={currentPage}
+                totalPage={totalPage}
+            />
         </>
     )
 }
