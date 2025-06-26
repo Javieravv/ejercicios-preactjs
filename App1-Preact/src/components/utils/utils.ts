@@ -40,14 +40,16 @@ export const getVisiblePages = (
 }
 
 // Esta funcion me devuelve un record de las columnas y su ancho
-export const getColumnWidths = (columns: Column[]): Record<string, string> => {
-    let columnWidths: Record<string, string> = {};
-    columns.forEach((column) => {
-       if (column.resizable === true) {
-          columnWidths = {
-            ...columnWidths,
-            [column.key]: column.width || '150px' // Valor por defecto de 150 si no}
-       } 
-    }})
+// Primero buscaremos anchos de columna guardados en localStorage
+export const getColumnWidths = (columns: Column[], tableId: string): Record<string, string> => {
+    const savedWidths = localStorage.getItem(`columnWidths-${tableId}`);
+    if (savedWidths) {
+        return JSON.parse(savedWidths);
+    }
+
+    const columnWidths: Record<string, string> = {};
+    columns.forEach((col) => {
+        columnWidths[col.key] = col.width || '150px'; // Valor por defecto de 150 si no se especifica
+    })
     return columnWidths;
 }

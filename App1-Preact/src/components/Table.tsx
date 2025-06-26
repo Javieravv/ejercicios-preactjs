@@ -9,12 +9,14 @@ interface TableProps {
     data: any[];
     columns: Column[];
     pageSize?: number;
+    tableId: string; // Agregamos un id para la tabla
 }
 
 export const Table = ({
     data,
     columns,
-    pageSize = 10
+    pageSize = 10,
+    tableId
 }: TableProps) => {
     const [currentPage, setCurrentPage] = useState(1)
     const [sortColumn, setSortColumn] = useState<string | null>(null)
@@ -22,16 +24,20 @@ export const Table = ({
     const [filterActiveColumn, setFilterActiveColumn] = useState<string | null>(null)
     const [columnFilters, setColumnFilters] = useState<Record<string, string>>({})
     const [valueColumnFilter, setValueColumnFilter] = useState<string>('')
-    const [columnsWitch, setColumnsWitch] = useState<Record<string, string>>(() => getColumnWidths(columns)) // para manejar el ancho de las columnas. 
+    const [columnsWitch, setColumnsWitch] = useState<Record<string, string>>(() => getColumnWidths(columns, tableId)) // para manejar el ancho de las columnas. 
     const thRefs = useRef<(HTMLTableCellElement | null)[]>([]) // Referencia para los th de la tabla
+    const resizeRef = useRef<{
+        columnKey: string;
+        startX: number;
+        startWidth: number;
+    } | null>(null);
+    const columnsRef = useRef<Record<string, string>>({});
 
-    console.log('Columnas con ancho: ', columnsWitch)
-    console.log('REFS: ', thRefs)
+
     // Filtramos datos.
     const filteredData = useMemo(() => {
         return data.filter((item) => {
             return Object.entries(columnFilters).every(([key, value]) => {
-                console.log(`Key = ${key} Valor = ${value}`)
                 const raw = item[key]
                 if (!value) return true;
                 const cellValue = raw !== undefined && raw !== null
@@ -66,11 +72,49 @@ export const Table = ({
     const btnsPagesVisibles = getVisiblePages(currentPage, totalPage, 4)
 
     // Codigo para el redimensionamiento de columnas
-    const startResizing = (index: number) => (e)=>{}
+    const startResizing = (key: string, index: number) => (e: MouseEvent) => {
+        console.log('Iniciando redimensionamiento de columna:', key, index);
+        const th = thRefs.current[index];
+        if (!th) return;
 
-    const handleMouseMove = (e: MouseEvent) => {}
+        resizeRef.current = {
+            columnKey: key,
+            startX: e.clientX,
+            startWidth: th.offsetWidth
+        }
 
-    const stopResizing = () => {}
+        // e.preventDefault();
+        // setIsResizing(index)
+        document.addEventListener('mousemove', handleMouseMove)
+        document.addEventListener('mouseup', stopResizing)
+    }
+
+    const handleMouseMove = (e: MouseEvent) => {
+        const ref = resizeRef.current;
+        if (!ref) return;
+
+        const deltaX = e.clientX - ref.startX;
+        const newWidth = ref.startWidth + deltaX;
+
+        setColumnsWitch(prev => {
+            const updated = {
+                ...prev,
+                // [ref.columnKey]: Math.max(newWidth, 80).toString().trim() + 'px' // Aseguramos que el ancho mínimo sea de 80px
+                [ref.columnKey]: `${newWidth}px` // Nuevo ancho
+            }
+            columnsRef.current = updated;
+            return updated;
+        });
+
+    }
+
+    const stopResizing = () => {
+        // Guardar
+        localStorage.setItem(`columnWidths-${tableId}`, JSON.stringify(columnsRef.current));
+        // setIsResizing(null);
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', stopResizing);
+    }
 
     return (
         <>
@@ -112,8 +156,8 @@ export const Table = ({
                                 return (
                                     <th
                                         key={column.key}
-                                        style={{ width: column.width || '160px' }}
-                                        ref={el => thRefs.current[index] = el }
+                                        style={{ width: `${columnsWitch[column.key]}` || '160px' }}
+                                        ref={el => thRefs.current[index] = el}
                                     >
                                         <div class="th-head">
                                             {/* Aqui ira el boton para eliminar el filtro */}
@@ -193,7 +237,10 @@ export const Table = ({
                                         </div>
                                         {/* Botón para cambiar el ancho de la columna */
                                             column.resizable && (
-                                                <div class='th-resizer'></div>
+                                                <div
+                                                    class='th-resizer'
+                                                    onMouseDown={startResizing(column.key, index)}
+                                                ></div>
                                             )
                                         }
                                     </th>
@@ -210,7 +257,7 @@ export const Table = ({
                                     return (
                                         <td
                                             key={column.key}
-                                            style={{ width: column.width || '160px' }}
+                                            style={{ width: `${columnsWitch[column.key]}` || '160px' }}
                                         >
                                             <div
                                                 style={{
