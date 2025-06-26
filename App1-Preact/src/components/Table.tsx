@@ -2,7 +2,7 @@
 import { useMemo, useRef, useState } from 'preact/hooks';
 import './css/table-css.css'
 import type { Column } from '../data/datatable';
-import { getColumnWidths, getVisiblePages } from './utils/utils';
+import { getColumnOrder, getColumnWidths, getVisiblePages } from './utils/utils';
 import { ChevronUpIcon, FilterIcon } from '@heroicons/react/solid';
 
 interface TableProps {
@@ -25,6 +25,9 @@ export const Table = ({
     const [columnFilters, setColumnFilters] = useState<Record<string, string>>({})
     const [valueColumnFilter, setValueColumnFilter] = useState<string>('')
     const [columnsWitch, setColumnsWitch] = useState<Record<string, string>>(() => getColumnWidths(columns, tableId)) // para manejar el ancho de las columnas. 
+    const [columnsLocal, setColumnsLocal] = useState<Column[]>(() => getColumnOrder(columns, tableId)); // Estado local para las columnas
+    const [draggedColIndex, setDraggedColIndex] = useState<number | null>(null);
+    const [isResizing, setIsResizing] = useState(false)
     const thRefs = useRef<(HTMLTableCellElement | null)[]>([]) // Referencia para los th de la tabla
     const resizeRef = useRef<{
         columnKey: string;
@@ -74,8 +77,10 @@ export const Table = ({
     // Codigo para el redimensionamiento de columnas
     const startResizing = (key: string, index: number) => (e: MouseEvent) => {
         console.log('Iniciando redimensionamiento de columna:', key, index);
+        setIsResizing(true);
         const th = thRefs.current[index];
         if (!th) return;
+        document.body.classList.add('resizing');
 
         resizeRef.current = {
             columnKey: key,
@@ -110,11 +115,42 @@ export const Table = ({
 
     const stopResizing = () => {
         // Guardar
+        setIsResizing(false);
         localStorage.setItem(`columnWidths-${tableId}`, JSON.stringify(columnsRef.current));
+        document.body.classList.remove('resizing');
         // setIsResizing(null);
         document.removeEventListener('mousemove', handleMouseMove);
         document.removeEventListener('mouseup', stopResizing);
     }
+
+    // Código para hacer drag and drop en las columnas
+    const handleDragStart = (e: DragEvent, index: number) => {
+        console.log('Iniciamos Arrastrando columna:', index);
+        setDraggedColIndex(index)
+    }
+
+    const handleDragOver = (e: DragEvent) => {
+        e.preventDefault(); // Necesario para permitir el drop
+        console.log('Arrastrando sobre una columna');
+    }
+
+    const handleDrop = (e: DragEvent, index: number) => {
+        e.preventDefault();
+        const draggedIndex = draggedColIndex;
+        console.log('Columna arrastrada desde el índice:', draggedIndex, 'a la posición:', index);
+        if (draggedIndex === null || draggedIndex === index) return;
+
+        // Reordenar las columnas
+        const newColumns = [...columnsLocal];
+        const [removed] = newColumns.splice(draggedIndex, 1);
+        newColumns.splice(index, 0, removed);
+
+        setColumnsLocal(newColumns);
+        setDraggedColIndex(null); // Resetear el índice arrastrado
+        localStorage.setItem(`columnsOrder-${tableId}`, JSON.stringify(newColumns.map(col => col.key))); // Guardar el nuevo orden de las columnas
+    }
+
+    console.log('Columnas reordenadas traidas: ', getColumnOrder(columns, tableId));
 
     return (
         <>
@@ -151,13 +187,17 @@ export const Table = ({
                     {/* Encabezado de la tabla */}
                     <thead>
                         <tr>
-                            {columns.map((column, index) => {
+                            {columnsLocal.map((column, index) => {
                                 if (!column.visible) return
                                 return (
                                     <th
+                                        draggable={!isResizing}
                                         key={column.key}
                                         style={{ width: `${columnsWitch[column.key]}` || '160px' }}
                                         ref={el => thRefs.current[index] = el}
+                                        onDragStart={(e) => handleDragStart(e as DragEvent, index)}
+                                        onDragOver={(e) => handleDragOver(e)}
+                                        onDrop={(e) => handleDrop(e as DragEvent, index)}
                                     >
                                         <div class="th-head">
                                             {/* Aqui ira el boton para eliminar el filtro */}
@@ -239,7 +279,14 @@ export const Table = ({
                                             column.resizable && (
                                                 <div
                                                     class='th-resizer'
-                                                    onMouseDown={startResizing(column.key, index)}
+                                                    // onMouseDown={startResizing(column.key, index)}
+                                                    onPointerDown={(e) => {
+                                                        e.stopPropagation(); // Evitar que el evento se propague al th
+                                                        startResizing(column.key, index)(e)
+                                                    }}
+                                                    // onDragStart={(e) => e.stopPropagation()}
+                                                    // onClick={(e) => e.stopPropagation()}
+                                                    draggable={false}
                                                 ></div>
                                             )
                                         }
@@ -252,7 +299,7 @@ export const Table = ({
                     <tbody>
                         {currentData.map((item, index) => (
                             <tr key={item.id}>
-                                {columns.map((column) => {
+                                {columnsLocal.map((column) => {
                                     if (!column.visible) return null
                                     return (
                                         <td

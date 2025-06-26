@@ -53,3 +53,17 @@ export const getColumnWidths = (columns: Column[], tableId: string): Record<stri
     })
     return columnWidths;
 }
+
+// Esta función devuelve el orden de las columnas que están almacenadas.
+export const getColumnOrder = (columns: Column[], tableId: string): Column[] => {
+    const savedOrder = localStorage.getItem(`columnsOrder-${tableId}`);
+    // Si no hay orden de columnas guardadas, retornamos las columnas originales
+    if (!savedOrder) {
+        return columns;
+    }
+    // Si hay columnas guardadas, entonces devolvemos el arreglo conforme con el orden guardado.
+    const orderedColumns: Column[] = JSON.parse(savedOrder)
+        .map((key:string) => columns.find(col => col.key === key))
+        .filter(Boolean)
+    return orderedColumns;
+}

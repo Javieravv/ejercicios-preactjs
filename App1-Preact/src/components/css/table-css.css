@@ -5,6 +5,10 @@
     --bgcolortablecontainer: rgba(229, 226, 226, 0.182);
 }
 
+body.resizing {
+  user-select: none;
+  cursor: col-resize !important;
+}
 
 .table-container {
     width: 100%;
@@ -115,15 +119,16 @@ th {
 }
 
 .th-resizer {
-    display: inline-block;
-    width: 5px;
+    /* display: inline-block; */
+    width: 6px;
     height: 100%;
     position: absolute;
     right: 0;
     top: 0;
-    transform: translateX(50%);
+    /* transform: translateX(50%); */
     cursor: col-resize;
     background-color: transparent;
+    z-index: 10;
 }
 
 .btn-filter {

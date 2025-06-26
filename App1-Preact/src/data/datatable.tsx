@@ -22,7 +22,7 @@ export const columnsTable: Column[] = [
         width: "100px",
         sortable: true,
         visible: false,
-        textAlignItem: { justifyContent: 'flex-start'  }
+        textAlignItem: { justifyContent: 'flex-start' }
     },
     {
         label: "Apellidos",
@@ -31,7 +31,7 @@ export const columnsTable: Column[] = [
         sortable: true,
         visible: true,
         filtered: true,
-        textAlignItem: { justifyContent: 'flex-start'  },
+        textAlignItem: { justifyContent: 'flex-start' },
         resizable: true
     },
     {
@@ -41,7 +41,7 @@ export const columnsTable: Column[] = [
         sortable: true,
         visible: true,
         filtered: true,
-        textAlignItem: { justifyContent: 'flex-start'  },
+        textAlignItem: { justifyContent: 'flex-start' },
         resizable: true
     },
     {
@@ -52,7 +52,7 @@ export const columnsTable: Column[] = [
         visible: true,
         filtered: false,
         render: (row) => <span>{row.apellidos} {row.nombres}</span>,
-        textAlignItem: { justifyContent: 'flex-start'  },
+        textAlignItem: { justifyContent: 'flex-start' },
         resizable: true
     },
     {
@@ -61,16 +61,18 @@ export const columnsTable: Column[] = [
         width: "250px",
         sortable: true,
         visible: true,
-        textAlignItem: { justifyContent: 'center'},
+        textAlignItem: { justifyContent: 'center' },
         filtered: true,
         render: (row) => {
             const [year, month, day] = row.fechaNacimiento.split('-').map(Number);
             const dateRow = new Date(year, month - 1, day);
-            const optionsFormat = {
+            
+            const optionsFormat: Intl.DateTimeFormatOptions = {
                 month: 'short',
                 day: '2-digit',
                 year: 'numeric'
-            }
+            };
+
             const dateFormated = new Intl.DateTimeFormat('en-US', optionsFormat)
             let dateOk = dateFormated.format(dateRow)
             dateOk = dateOk.replace(/,?\s/g, '-');
@@ -85,7 +87,7 @@ export const columnsTable: Column[] = [
         sortable: true,
         visible: true,
         filtered: true,
-        textAlignItem: { justifyContent: 'center'  },
+        textAlignItem: { justifyContent: 'center' },
         resizable: true,
     },
     {
@@ -109,7 +111,7 @@ export const columnsTable: Column[] = [
         sortable: true,
         visible: true,
         filtered: true,
-        textAlignItem: { justifyContent: 'flex-start'  },
+        textAlignItem: { justifyContent: 'flex-start' },
         resizable: true
     },
     {
@@ -119,7 +121,7 @@ export const columnsTable: Column[] = [
         sortable: true,
         visible: true,
         filtered: true,
-        textAlignItem: { justifyContent: 'flex-end'  },
+        textAlignItem: { justifyContent: 'flex-end' },
         resizable: true,
     },
     {
@@ -128,7 +130,7 @@ export const columnsTable: Column[] = [
         width: "180px",
         sortable: false,
         visible: true,
-        textAlignItem: { justifyContent: 'auto'  },
+        textAlignItem: { justifyContent: 'auto' },
         render: (row) =>
             <div
                 style={{ display: 'flex', justifyContent: 'center' }}
