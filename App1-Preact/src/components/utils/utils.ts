@@ -1,5 +1,7 @@
 // Utilidades
 
+import type { Column } from "../../data/datatable";
+
 // Ayuda con un arreglo para saber las páginas a mostrar
 export const getVisiblePages = (
     current: number,
@@ -35,4 +37,17 @@ export const getVisiblePages = (
     }
 
     return pages;
+}
+
+// Esta funcion me devuelve un record de las columnas y su ancho
+export const getColumnWidths = (columns: Column[]): Record<string, string> => {
+    let columnWidths: Record<string, string> = {};
+    columns.forEach((column) => {
+       if (column.resizable === true) {
+          columnWidths = {
+            ...columnWidths,
+            [column.key]: column.width || '150px' // Valor por defecto de 150 si no}
+       } 
+    }})
+    return columnWidths;
 }

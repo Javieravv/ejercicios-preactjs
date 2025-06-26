@@ -11,6 +11,7 @@ export interface Column {
     visible: boolean;
     filtered?: boolean;
     textAlignItem?: React.CSSProperties;
+    resizable?: boolean;
     render?: (row: any) => JSX.Element;
 }
 
@@ -30,7 +31,8 @@ export const columnsTable: Column[] = [
         sortable: true,
         visible: true,
         filtered: true,
-        textAlignItem: { justifyContent: 'flex-start'  }
+        textAlignItem: { justifyContent: 'flex-start'  },
+        resizable: true
     },
     {
         label: "Nombres",
@@ -39,7 +41,8 @@ export const columnsTable: Column[] = [
         sortable: true,
         visible: true,
         filtered: true,
-        textAlignItem: { justifyContent: 'flex-start'  }
+        textAlignItem: { justifyContent: 'flex-start'  },
+        resizable: true
     },
     {
         label: "Nombres Completos",
@@ -49,7 +52,8 @@ export const columnsTable: Column[] = [
         visible: true,
         filtered: false,
         render: (row) => <span>{row.apellidos} {row.nombres}</span>,
-        textAlignItem: { justifyContent: 'flex-start'  }
+        textAlignItem: { justifyContent: 'flex-start'  },
+        resizable: true
     },
     {
         label: "Fecha de Nacimiento",
@@ -71,16 +75,18 @@ export const columnsTable: Column[] = [
             let dateOk = dateFormated.format(dateRow)
             dateOk = dateOk.replace(/,?\s/g, '-');
             return <>{dateOk}</>;
-        }
+        },
+        resizable: true
     },
     {
         label: "Edad",
         key: "edad",
-        width: "80px",
+        width: "120px",
         sortable: true,
         visible: true,
         filtered: true,
-        textAlignItem: { justifyContent: 'center'  }
+        textAlignItem: { justifyContent: 'center'  },
+        resizable: true,
     },
     {
         label: "Salario devengado",
@@ -93,7 +99,8 @@ export const columnsTable: Column[] = [
         render: (row) => {
             const numberFormat = new Intl.NumberFormat('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2, useGrouping: true }).format(row.salario);
             return <>{numberFormat}</>;
-        }
+        },
+        resizable: true
     },
     {
         label: "Dirección",
@@ -102,7 +109,8 @@ export const columnsTable: Column[] = [
         sortable: true,
         visible: true,
         filtered: true,
-        textAlignItem: { justifyContent: 'flex-start'  }
+        textAlignItem: { justifyContent: 'flex-start'  },
+        resizable: true
     },
     {
         label: "Teléfono",
@@ -111,7 +119,8 @@ export const columnsTable: Column[] = [
         sortable: true,
         visible: true,
         filtered: true,
-        textAlignItem: { justifyContent: 'flex-end'  }
+        textAlignItem: { justifyContent: 'flex-end'  },
+        resizable: true,
     },
     {
         label: "Acciones",

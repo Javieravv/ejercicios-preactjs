@@ -1,8 +1,8 @@
 // Componente table personalizado
-import { useMemo, useState } from 'preact/hooks';
+import { useMemo, useRef, useState } from 'preact/hooks';
 import './css/table-css.css'
 import type { Column } from '../data/datatable';
-import { getVisiblePages } from './utils/utils';
+import { getColumnWidths, getVisiblePages } from './utils/utils';
 import { ChevronUpIcon, FilterIcon } from '@heroicons/react/solid';
 
 interface TableProps {
@@ -22,7 +22,11 @@ export const Table = ({
     const [filterActiveColumn, setFilterActiveColumn] = useState<string | null>(null)
     const [columnFilters, setColumnFilters] = useState<Record<string, string>>({})
     const [valueColumnFilter, setValueColumnFilter] = useState<string>('')
+    const [columnsWitch, setColumnsWitch] = useState<Record<string, string>>(() => getColumnWidths(columns)) // para manejar el ancho de las columnas. 
+    const thRefs = useRef<(HTMLTableCellElement | null)[]>([]) // Referencia para los th de la tabla
 
+    console.log('Columnas con ancho: ', columnsWitch)
+    console.log('REFS: ', thRefs)
     // Filtramos datos.
     const filteredData = useMemo(() => {
         return data.filter((item) => {
@@ -61,6 +65,13 @@ export const Table = ({
     const totalPage = Math.ceil(filteredData.length / pageSize)
     const btnsPagesVisibles = getVisiblePages(currentPage, totalPage, 4)
 
+    // Codigo para el redimensionamiento de columnas
+    const startResizing = (index: number) => (e)=>{}
+
+    const handleMouseMove = (e: MouseEvent) => {}
+
+    const stopResizing = () => {}
+
     return (
         <>
             {/* Mostramos información sobre campos filtrados */}
@@ -81,26 +92,28 @@ export const Table = ({
                             {key} = "{value}"
                         </button>
                     ))}
-                    <button 
-                    key={'limpiartodo'} 
-                    class='info-datafilter-value'
-                    onClick={() => setColumnFilters({})}>
+                    <button
+                        key={'limpiartodo'}
+                        class='info-datafilter-value'
+                        onClick={() => setColumnFilters({})}>
                         Limpiar Todo
                     </button>
                 </div>
 
             )}
+            {/* Inicio de la tabla */}
             <div class={`table-container`}>
                 <table>
                     {/* Encabezado de la tabla */}
                     <thead>
                         <tr>
-                            {columns.map((column) => {
+                            {columns.map((column, index) => {
                                 if (!column.visible) return
                                 return (
                                     <th
                                         key={column.key}
-                                        style={{ width: column.width || 'auto' }}
+                                        style={{ width: column.width || '160px' }}
+                                        ref={el => thRefs.current[index] = el }
                                     >
                                         <div class="th-head">
                                             {/* Aqui ira el boton para eliminar el filtro */}
@@ -178,6 +191,11 @@ export const Table = ({
                                                 </div>
                                             )}
                                         </div>
+                                        {/* Botón para cambiar el ancho de la columna */
+                                            column.resizable && (
+                                                <div class='th-resizer'></div>
+                                            )
+                                        }
                                     </th>
                                 )
                             })}
@@ -192,7 +210,7 @@ export const Table = ({
                                     return (
                                         <td
                                             key={column.key}
-                                            style={{ width: column.width || 'auto' }}
+                                            style={{ width: column.width || '160px' }}
                                         >
                                             <div
                                                 style={{

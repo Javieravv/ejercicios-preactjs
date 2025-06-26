@@ -28,6 +28,11 @@ thead {
     }
 }
 
+th {
+    /* border: 1px solid red; */
+    position: relative;
+}
+
 .th-head {
     position: relative;
     display: flex;
@@ -107,6 +112,18 @@ thead {
 .th-filter-icon {
     width: 20px;
     height: 20px;
+}
+
+.th-resizer {
+    display: inline-block;
+    width: 5px;
+    height: 100%;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transform: translateX(50%);
+    cursor: col-resize;
+    background-color: transparent;
 }
 
 .btn-filter {
