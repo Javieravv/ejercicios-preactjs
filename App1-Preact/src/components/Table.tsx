@@ -1,8 +1,5 @@
 // Componente table personalizado
-import { useMemo, useRef, useState } from 'preact/hooks';
-import './css/table-css.css'
 import type { Column } from '../data/datatable';
-import { getColumnOrder, getColumnWidths, getVisiblePages } from './utils/utils';
 import TableFilteredFields from './TableFilteredFields';
 import TableHead from './TableHead';
 import TableButtons from './TableButtons';
@@ -11,6 +8,9 @@ import { useTableFilters } from './hooks/useTableFilters'
 import { useTableSort } from './hooks/useTableSort';
 import { usePagination } from './hooks/usePagination';
 import { useColumnResize } from './hooks/useColumnResize';
+import { useColumnDrag } from './hooks/useColumnDrag';
+import './css/table-css.css'
+import { useMemo, useRef } from 'preact/hooks';
 
 interface TableProps {
     data: any[];
@@ -25,12 +25,11 @@ export const Table = ({
     pageSize = 10,
     tableId
 }: TableProps) => {
-    const [columnsLocal, setColumnsLocal] = useState<Column[]>(() => getColumnOrder(columns, tableId)); // Estado local para las columnas
-    const [draggedColIndex, setDraggedColIndex] = useState<number | null>(null);
     const thRefs = useRef<(HTMLTableCellElement | null)[]>([]) // Referencia para los th de la tabla
     const columnsRef = useRef<Record<string, string>>({});
     const filterControls = useTableFilters();
     const sortedControls = useTableSort();
+    const { columnsLocal, handleDragStart, handleDragOver, handleDrop } = useColumnDrag(columns, tableId);
     const { columnFilters, setColumnFilters } = filterControls
     const { sortColumn, sortDirection } = sortedControls
 
@@ -69,30 +68,6 @@ export const Table = ({
     // Colocamos aquí el llamado al hook de redimensionamiento de columnas
     // para que se ejecute al inicio del componente.
     const { columnsWitch, isResizing, startResizing } = useColumnResize(columns, tableId, columnsRef, thRefs)
-
-    // Código para hacer drag and drop en las columnas
-    const handleDragStart = (e: DragEvent, index: number) => {
-        setDraggedColIndex(index)
-    }
-
-    const handleDragOver = (e: DragEvent) => {
-        e.preventDefault(); // Necesario para permitir el drop
-    }
-
-    const handleDrop = (e: DragEvent, index: number) => {
-        e.preventDefault();
-        const draggedIndex = draggedColIndex;
-        if (draggedIndex === null || draggedIndex === index) return;
-
-        // Reordenar las columnas
-        const newColumns = [...columnsLocal];
-        const [removed] = newColumns.splice(draggedIndex, 1);
-        newColumns.splice(index, 0, removed);
-
-        setColumnsLocal(newColumns);
-        setDraggedColIndex(null); // Resetear el índice arrastrado
-        localStorage.setItem(`columnsOrder-${tableId}`, JSON.stringify(newColumns.map(col => col.key))); // Guardar el nuevo orden de las columnas
-    }
 
     return (
         <>

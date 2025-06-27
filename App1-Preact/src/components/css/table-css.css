@@ -1,40 +1,55 @@
 /* Código css para el componente table */
 :root {
     --bgcolortbody: white;
-    --bgcolorthead: #0408f7d3;
+    --bgcolorthead: #0408f7;
     --bgcolortablecontainer: rgba(229, 226, 226, 0.182);
+    --colorFontTitle: white;
+    --bgcolorbuttoncancel: red;
+    --bgcolorbuttonok: green;
 }
 
 body.resizing {
-  user-select: none;
-  cursor: col-resize !important;
+    user-select: none;
+    cursor: col-resize !important;
 }
 
 .table-container {
     width: 100%;
     overflow-x: auto;
+    overflow-y: auto;
     margin-bottom: 0px;
-    min-height: 250px;
+    max-height: 800px;
+    min-height: 200px;
 }
 
 table {
     width: max-content;
+    /* width: 100%; */
+    border-collapse: separate;
     /* min-width: 600px; */
 }
 
 thead {
     background-color: var(--bgcolorthead);
-    color: white;
+    color: var(--colorFontTitle);
     height: 80px;
-
-    th:hover {
-        cursor: pointer;
-    }
+    position: relative;
+    z-index: 2;
 }
 
 th {
-    /* border: 1px solid red; */
-    position: relative;
+    /* border: 1px solid red;
+    position: relative; */
+    position: sticky;
+    top: 0;
+    background-color: var(--bgcolorthead);
+    color: var(--colorFontTitle);
+    z-index: 3;
+    /* text-align: center; */
+
+    &:hover {
+        cursor: pointer;
+    }
 }
 
 .th-head {
@@ -74,7 +89,7 @@ th {
 
 .info-datafilter-value:hover {
     background-color: var(--bgcolorthead);
-    color: white;
+    color: var(--colorFontTitle);
 }
 
 /* Div que mostrará el filtro */
@@ -82,7 +97,7 @@ th {
     position: absolute;
     min-height: 60px;
     width: max(100%, 250px);
-    background-color: white;
+    background-color: var(--bgcolortablecontainer);
     top: calc(100% + 25px);
     border: 1px solid var(--bgcolorthead);
     border-radius: 5px;
@@ -137,21 +152,21 @@ th {
     padding: 3px 3px;
     border: none;
     border-radius: 6px;
-    color: white;
+    color: var(--colorFontTitle);
 }
 
 .btn-filter-ok {
-    background-color: green;
+    background-color: var(--bgcolorbuttonok);
 }
 
 .btn-filter-cancel {
-    background-color: red;
+    background-color: var(--bgcolorbuttoncancel);
 }
 
 .clear-button-filter {
     background: transparent;
     border: none;
-    color: red;
+    color: var(--bgcolorbuttoncancel);
     font-weight: bold;
     font-size: 1rem;
     margin-left: 4px;
@@ -202,7 +217,7 @@ tbody td {
     height: 50px;
     background-color: var(--bgcolortablecontainer);
     padding: 8px 15px;
-    color: white;
+    color: var(--colorFontTitle);
     border: 1px solid var(--bgcolorthead);
     border-radius: 4px;
 }
@@ -213,7 +228,7 @@ tbody td {
     border-radius: 5px;
     padding: 5px 5px;
     background-color: var(--bgcolorthead);
-    color: white;
+    color: var(--colorFontTitle);
     font-weight: bolder;
     font-size: 1rem;
     cursor: pointer;
@@ -225,7 +240,7 @@ tbody td {
 }
 
 .btn-reset-filtros {
-    background-color: red;
+    background-color: var(--bgcolorbuttoncancel);
 }
 
 .btn-navigation-page {
@@ -233,7 +248,7 @@ tbody td {
     width: 35px;
     border-radius: 50%;
     background-color: var(--bgcolorthead);
-    color: white;
+    color: var(--colorFontTitle);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -243,7 +258,7 @@ tbody td {
 }
 
 .btn-activepage {
-    background-color: white;
+    background-color: var(--bgcolortablecontainer);
     color: var(--bgcolorthead);
 }
 
@@ -253,8 +268,8 @@ tbody td {
 .button-row {
     min-width: 60px;
     border: 0px;
-    background-color: red;
-    color: white;
+    background-color: var(--bgcolorbuttoncancel);
+    color: var(--colorFontTitle);
     padding: 5px 8px;
     border-radius: 3px;
     margin: 0 auto;
