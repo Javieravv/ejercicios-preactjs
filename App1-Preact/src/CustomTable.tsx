@@ -8,7 +8,7 @@ const CustomTable = () => {
             <Table
                 columns={columnsTable}
                 data={dataTable}
-                pageSize={15}
+                pageSize={8}
                 tableId="custom-table-persons"
             />
         </>

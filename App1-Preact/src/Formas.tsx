@@ -21,7 +21,6 @@ const Formas = () => {
 
     const handleSubmit = (event: Event) => {
         event.preventDefault()
-        console.log('Datos enviados:', formData)
     }
 
     const handleReset = () => {
@@ -31,7 +30,6 @@ const Formas = () => {
             direccion: ''
         })
         nombresRef.current?.focus();
-        console.log('Formulario restablecido')
     }
     return (
         <>

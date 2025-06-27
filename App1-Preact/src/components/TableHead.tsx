@@ -1,27 +1,21 @@
 // Componente que muestra el encabezado de la tabla
 import type { Column } from "../data/datatable";
 import { ChevronUpIcon, FilterIcon } from '@heroicons/react/solid';
+import type { FilterControls } from "./hooks/useTableFilters";
+import type { SortedControls } from "./hooks/useTableSort";
 
 interface TableHeadProps {
-    columnFilters: Record<string, string>;
     columnsLocal: Column[];
     columnsWitch: Record<string, string>;
-    filterActiveColumn: string | null;
     handleDragOver: (e: DragEvent) => void;
     handleDragStart: (e: DragEvent, index: number) => void;
     handleDrop: (e: DragEvent, index: number) => void;
     isResizing: Boolean;
-    setColumnFilters: React.Dispatch<React.SetStateAction<Record<string, string>>>;
     setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
-    setFilterActiveColumn: React.Dispatch<React.SetStateAction<string | null>>;
-    setSortColumn: React.Dispatch<React.SetStateAction<string | null>>;
-    setSortDirection: React.Dispatch<React.SetStateAction<'asc' | 'desc'>>;
-    setValueColumnFilter: React.Dispatch<React.SetStateAction<string>>;
-    sortColumn: string | null;
-    sortDirection: 'asc' | 'desc';
     startResizing: (key: string, index: number) => (e: MouseEvent) => void;
     thRefs: React.MutableRefObject<(HTMLTableCellElement | null)[]>;
-    valueColumnFilter: string;
+    filterControls: FilterControls;
+    sortedControls: SortedControls;
 }
 
 interface TableHeadFilterProps {
@@ -97,7 +91,11 @@ const TableHeadFilter = ({
     )
 }
 
-
+// Este componente se encarga de mostrar el botón para cambiar el ancho de la columna.
+// Este componente se renderiza solo si la columna es redimensionable (resizable).
+// El botón se muestra al pasar el mouse sobre el encabezado de la columna y permite al usuario cambiar el ancho de la columna arrastrando el botón hacia la izquierda o hacia la derecha.
+// El evento `onPointerDown` se utiliza para iniciar el proceso de redimensionamiento de la columna.
+// El evento `onMouseDown` se ha reemplazado por `onPointerDown`
 const TableHeadResizable = ({
     startResizing,
     columnkey,
@@ -121,26 +119,23 @@ const TableHeadResizable = ({
 // Componente principal que muestra el encabezado de la tabla.
 
 const TableHead = ({
-    columnFilters,
     columnsLocal,
     columnsWitch,
-    filterActiveColumn,
     handleDragOver,
     handleDragStart,
     handleDrop,
     isResizing,
-    setColumnFilters,
     setCurrentPage,
-    setFilterActiveColumn,
-    setSortColumn,
-    setSortDirection,
-    setValueColumnFilter,
-    sortColumn,
-    sortDirection,
     startResizing,
     thRefs,
-    valueColumnFilter,
+    filterControls,
+    sortedControls
 }: TableHeadProps) => {
+    const {columnFilters, setColumnFilters, 
+        filterActiveColumn,  setFilterActiveColumn, 
+        valueColumnFilter, setValueColumnFilter} = filterControls
+
+    const { sortColumn,  sortDirection,  toggleSortColumn } = sortedControls
     return (
         <>
             <thead>
@@ -173,14 +168,9 @@ const TableHead = ({
                                     )}
                                     <span
                                         onClick={() => {
+                                            toggleSortColumn(column.key, column.sortable)
                                             if (sortColumn !== column.key && column.sortable) {
-                                                setSortColumn(column.key)
-                                                setSortDirection('asc')
                                                 setFilterActiveColumn('')
-                                            }
-
-                                            if (sortColumn === column.key && column.sortable) {
-                                                setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc')
                                             }
                                         }}
                                     >{column.label}</span>
