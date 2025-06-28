@@ -2,7 +2,7 @@
 
 import type { JSX } from "preact/jsx-runtime";
 import './css/tabs-css.css'
-import { useState } from "preact/hooks";
+import { useEffect, useState } from "preact/hooks";
 
 interface Tab {
     id: string;
@@ -19,7 +19,13 @@ const Tabs = (
     { tabs }: TabsProps
 ) => {
     const [tabActive, setTabActive] = useState(0)
+    const [mountedTabs, setMountedTabs] = useState<Set<number>>(new Set([tabActive]))
     const [localTabs] = useState(tabs)
+
+    useEffect(() => {
+        setMountedTabs(prev => new Set(prev).add(tabActive))
+    }, [tabActive])
+
 
     return (
         <section
@@ -47,13 +53,30 @@ const Tabs = (
                 ))}
             </div>
             {/* Aqui van los contenidos del tab */}
-            <div class="tabs-content"
+            {/* <div class="tabs-content"
                 role="tabpanel"
                 id={`panel-${tabs[tabActive].id}`}
                 aria-labelledby={`tab-${tabs[tabActive].id}`}
             >
                 {localTabs[tabActive].content}
+            </div> */}
+            <div class="tabs-content">
+                {localTabs.map((tab, index) => {
+                    if (!mountedTabs.has(index)) return null;
+                    return (
+                        <div
+                            key={tab.id}
+                            class={`tab-content ${index === tabActive ? 'active' : 'inactive'}`}
+                            role="tabpanel"
+                            id={`panel-${tabs[tabActive].id}`}
+                            aria-labelledby={`tab-${tabs[tabActive].id}`}
+                        >
+                            {tab.content}
+                        </div>
+                    );
+                })}
             </div>
+
             <strong>Tab Activo: {tabActive} - {localTabs[tabActive].label}</strong>
         </section>
     )

@@ -8,23 +8,23 @@
 export const dataTabs = [
     {
         id: 'tab1',
-        label: 'Tab 1',
+        label: 'Pestaña 1',
         content: <p>Contenido de la pestaña 1</p>,
         isActive: true
     },
     {
         id: 'tab2',
-        label: 'Tab 2',
+        label: 'Pestaña 2',
         content: <p>Contenido de la pestaña 2</p>
     },
     {
         id: 'tab3',
-        label: 'Tab 3',
+        label: 'Pestaña 3',
         content: <button>Contenido de la pestaña 3</button>
     },
     {
         id: 'tab4',
-        label: 'Tab 4',
+        label: 'Pestaña 4',
         content: <>
         <div>
             <h2>Contenido de una nueva pestaña</h2>
@@ -36,7 +36,7 @@ export const dataTabs = [
     },
     {
         id: 'tab5',
-        label: 'Tab 5',
+        label: 'Pestaña 5',
         content: <p>Contenido de la pestaña 5</p>
     }
 ]
