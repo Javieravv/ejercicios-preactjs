@@ -76,3 +76,13 @@ article {
     flex: 1 1 500px;
     min-width: 450px;
 }
+
+.section-container1 {
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    margin: 8px 0;
+    gap: 8px;
+}

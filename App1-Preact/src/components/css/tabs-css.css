@@ -1,0 +1,53 @@
+/* Css para el componente Tabs personalizado con Preact. */
+
+
+:root {
+ 
+}
+
+
+.tabs-container {
+    width: 100%;
+    /* overflow-y: auto; */
+    margin-bottom: 0px;
+    max-height: 800px;
+    min-height: 200px;
+    /* border: 1px solid #ae1111; */
+}
+
+.tabs-label {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 5px;
+    cursor: pointer;
+    /* background-color: #f0f0f0; */
+    border-bottom: 1px solid #ae1111;
+    gap: 8px;
+}
+
+.tab-label {
+    padding: 5px 16px;
+    font-weight: bolder;
+    background-color: #ae1111;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.tab-label.active {
+    background-color: #f0f0f0;
+    color: #ae1111;
+    border-bottom: 2px solid #ae1111;
+}
+
+
+.tabs-content {
+    width: 100%;
+    padding: 5px;
+    border: 1px solid goldenrod ;
+    border-radius: 5px;
+    background-color: #f0f0f0;
+    min-height: 250px;
+    transition: all 0.3s ease-in-out;
+}
