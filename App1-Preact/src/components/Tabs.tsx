@@ -3,8 +3,9 @@
 import type { JSX } from "preact/jsx-runtime";
 import './css/tabs-css.css'
 import { useEffect, useState } from "preact/hooks";
+import { useTabsDrag } from "./hooks/useTabsDrag";
 
-interface Tab {
+export interface Tab {
     id: string;
     label: string;
     content: string | JSX.Element;
@@ -14,20 +15,22 @@ interface Tab {
 interface TabsProps {
     tabs: Tab[];
     closeTabs?: boolean;
+    tabId: string;
 }
 
 const Tabs = (
-    { tabs,
-        closeTabs = false // Prop opcional para cerrar pestañas 
+    {
+        tabs,
+        closeTabs = false,
+        tabId // Prop opcional para cerrar pestañas 
     }: TabsProps
 ) => {
-    const [tabActive, setTabActive] = useState(() => {
-        // Recuperamos el tab activo desde el localstorage o usamos el primero por defecto
-        const savedTab = localStorage.getItem('activeTab');
-        return savedTab ? parseInt(savedTab, 10) : 0;
-    })
+    // Usamos un hook personalizado para manejar el arrastre de pestañas
+    const { localTabs, setLocalTabs,
+        handleDragEnd, handleDragStart, handleDrop,
+        tabActive, setTabActive } = useTabsDrag(tabs, tabId);
+
     const [mountedTabs, setMountedTabs] = useState<Set<number>>(new Set([tabActive]))
-    const [localTabs, setLocalTabs] = useState(tabs)
 
     useEffect(() => {
         setMountedTabs(prev => new Set(prev).add(tabActive))
@@ -38,10 +41,19 @@ const Tabs = (
         localStorage.setItem('activeTab', tabActive.toString());
     }, [tabActive]);
 
+    useEffect(() => {
+        console.log("Tabs dentro del hook actualizados:", localTabs);
+    }, [localTabs]);
+
+
     // Eliminamos un tab de la lista de tabs si damos click en la X
     const handleCloseTab = (index: number) => {
-        setLocalTabs(prevTabs => prevTabs.filter((_, i) => i !== index));
-        setMountedTabs(new Set(localTabs.map((_, i) => i)));
+        console.log('Total de pestañas restantes antes de eliminar:', localTabs.length);
+        const updatedTabs = localTabs.filter((_, i) => i !== index);
+        const newMountedTabs = new Set(updatedTabs.map((_, i) => i));
+        setLocalTabs(updatedTabs);
+        setMountedTabs(newMountedTabs);
+
         // Si el tab eliminado es el activo, actualizamos el estado del tab activo
         if (index === tabActive) {
             // Si eliminamos el tab activo, retrocede uno o ve al 0
@@ -72,6 +84,10 @@ const Tabs = (
                         aria-selected={index === tabActive}
                         aria-controls={`panel-${tab.id}`}
                         tabIndex={index === tabActive ? 0 : -1}
+                        draggable={true}
+                        onDragStart={(e) => handleDragStart(e as DragEvent, index)}
+                        onDragOver={(e) => handleDragEnd(e)}
+                        onDrop={(e) => handleDrop(e as DragEvent, index)}
                     >
                         {tab.label}
                         {closeTabs && (
@@ -99,7 +115,9 @@ const Tabs = (
                     );
                 })}
             </div>
-            <strong>Tab Activo: {tabActive} - {localTabs[tabActive].label}</strong>
+            {localTabs.length !== 0 && (
+                <strong>Tab Activo: {tabActive} - {localTabs[tabActive].label}</strong>
+            )}
         </section>
     )
 }
