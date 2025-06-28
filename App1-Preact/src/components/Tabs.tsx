@@ -13,19 +13,45 @@ interface Tab {
 
 interface TabsProps {
     tabs: Tab[];
+    closeTabs?: boolean;
 }
 
 const Tabs = (
-    { tabs }: TabsProps
+    { tabs,
+        closeTabs = false // Prop opcional para cerrar pestañas 
+    }: TabsProps
 ) => {
-    const [tabActive, setTabActive] = useState(0)
+    const [tabActive, setTabActive] = useState(() => {
+        // Recuperamos el tab activo desde el localstorage o usamos el primero por defecto
+        const savedTab = localStorage.getItem('activeTab');
+        return savedTab ? parseInt(savedTab, 10) : 0;
+    })
     const [mountedTabs, setMountedTabs] = useState<Set<number>>(new Set([tabActive]))
-    const [localTabs] = useState(tabs)
+    const [localTabs, setLocalTabs] = useState(tabs)
 
     useEffect(() => {
         setMountedTabs(prev => new Set(prev).add(tabActive))
     }, [tabActive])
 
+    useEffect(() => {
+        // Guardamos el tab activo en el localstorage cada vez que cambia
+        localStorage.setItem('activeTab', tabActive.toString());
+    }, [tabActive]);
+
+    // Eliminamos un tab de la lista de tabs si damos click en la X
+    const handleCloseTab = (index: number) => {
+        setLocalTabs(prevTabs => prevTabs.filter((_, i) => i !== index));
+        setMountedTabs(new Set(localTabs.map((_, i) => i)));
+        // Si el tab eliminado es el activo, actualizamos el estado del tab activo
+        if (index === tabActive) {
+            // Si eliminamos el tab activo, retrocede uno o ve al 0
+            const newIndex = index > 0 ? index - 1 : 0;
+            setTabActive(newIndex);
+        } else if (index < tabActive) {
+            // Si eliminamos uno anterior al actual, el índice del activo se reduce
+            setTabActive(prev => prev - 1);
+        }
+    }
 
     return (
         <section
@@ -41,7 +67,6 @@ const Tabs = (
                         role={'tab'}
                         onClick={() => {
                             // Aquí puedes manejar el cambio de pestaña
-                            console.log(`Tab ${tab.label} clicked`);
                             setTabActive(index)
                         }}
                         aria-selected={index === tabActive}
@@ -49,17 +74,15 @@ const Tabs = (
                         tabIndex={index === tabActive ? 0 : -1}
                     >
                         {tab.label}
+                        {closeTabs && (
+                            <span onClick={(event) => {
+                                event.stopPropagation();
+                                handleCloseTab(index);
+                            }}>X</span>)}
                     </button>
                 ))}
             </div>
             {/* Aqui van los contenidos del tab */}
-            {/* <div class="tabs-content"
-                role="tabpanel"
-                id={`panel-${tabs[tabActive].id}`}
-                aria-labelledby={`tab-${tabs[tabActive].id}`}
-            >
-                {localTabs[tabActive].content}
-            </div> */}
             <div class="tabs-content">
                 {localTabs.map((tab, index) => {
                     if (!mountedTabs.has(index)) return null;
@@ -76,7 +99,6 @@ const Tabs = (
                     );
                 })}
             </div>
-
             <strong>Tab Activo: {tabActive} - {localTabs[tabActive].label}</strong>
         </section>
     )

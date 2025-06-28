@@ -8,7 +8,7 @@ const CustomTabs = () => {
                 <p>Componente Tab Personalizado hecho con Preact</p>
                 <p>Es una muestra de un componente Tab personalizado, hecho con Preact</p>
             </div>
-            <Tabs tabs={dataTabs} />
+            <Tabs tabs={dataTabs} closeTabs={true} />
         </>
     )
 }
