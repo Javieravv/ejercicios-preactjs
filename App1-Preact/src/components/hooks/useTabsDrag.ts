@@ -30,7 +30,6 @@ export const useTabsDrag = (
         const orderedTabs: Tab[] = JSON.parse(savedOrder)
             .map((key: string) => tabs.find(tab => tab.id === key))
             .filter(Boolean)
-        console.log('ESTE ES EL ORDEN DE TABS', orderedTabs)
         return orderedTabs;
     });
     const [tabActive, setTabActive] = useState(() => {

@@ -48,6 +48,10 @@
     border-bottom: 2px solid #ae1111;
 }
 
+.tab-label.activetemp {
+    border-bottom: 2px solid orange;
+}
+
 .tab-label span {
   margin-left: 8px;
   color: #fff;

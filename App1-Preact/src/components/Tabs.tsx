@@ -2,7 +2,7 @@
 
 import type { JSX } from "preact/jsx-runtime";
 import './css/tabs-css.css'
-import { useEffect, useState } from "preact/hooks";
+import { useEffect, useRef, useState } from "preact/hooks";
 import { useTabsDrag } from "./hooks/useTabsDrag";
 
 export interface Tab {
@@ -31,6 +31,8 @@ const Tabs = (
         tabActive, setTabActive } = useTabsDrag(tabs, tabId);
 
     const [mountedTabs, setMountedTabs] = useState<Set<number>>(new Set([tabActive]))
+    const tabsRef = useRef<(HTMLButtonElement | null)[]>([])
+    const [tabActiveTemp, setTabActiveTemp] = useState(tabActive)
 
     useEffect(() => {
         setMountedTabs(prev => new Set(prev).add(tabActive))
@@ -45,10 +47,18 @@ const Tabs = (
         console.log("Tabs dentro del hook actualizados:", localTabs);
     }, [localTabs]);
 
+    useEffect(() => {
+        // Al cargar damos el foco al tab activo.
+        const userNavigatedWithTab = document.activeElement === document.body;
+        if (userNavigatedWithTab && tabsRef.current[tabActive]) {
+            tabsRef.current[tabActive]!.focus();
+        }
+    }, []);
+
 
     // Eliminamos un tab de la lista de tabs si damos click en la X
     const handleCloseTab = (index: number) => {
-        console.log('Total de pestañas restantes antes de eliminar:', localTabs.length);
+
         const updatedTabs = localTabs.filter((_, i) => i !== index);
         const newMountedTabs = new Set(updatedTabs.map((_, i) => i));
         setLocalTabs(updatedTabs);
@@ -65,25 +75,82 @@ const Tabs = (
         }
     }
 
+    // Funcion para capturar las teclas que se oprimen para implementar navegación por teclado
+    const handleKeyDownTab = (e: KeyboardEvent) => {
+        switch (e.key) {
+            case 'ArrowRight':
+                const newIndexTab = tabActiveTemp === localTabs.length - 1 ? 0 : tabActiveTemp + 1
+                setTabActiveTemp(newIndexTab);
+                if (tabsRef.current[tabActiveTemp]) {
+                    tabsRef.current[tabActiveTemp]!.focus();
+                }
+                break;
+            case 'ArrowLeft':
+                const newIndexTab1 = tabActiveTemp === 0 ? localTabs.length - 1 : tabActiveTemp - 1
+                setTabActiveTemp(newIndexTab1);
+                if (tabsRef.current[tabActiveTemp]) {
+                    tabsRef.current[tabActiveTemp]!.focus();
+                }
+                break;
+            case 'Enter':
+            case ' ': // Space
+                setTabActive(tabActiveTemp)
+                if (tabsRef.current[tabActiveTemp]) {
+                    tabsRef.current[tabActiveTemp]!.focus();
+                }
+                break;
+            case 'Home':
+                setTabActiveTemp(0);
+                if (tabsRef.current[tabActiveTemp]) {
+                    tabsRef.current[tabActiveTemp]!.focus();
+                }
+                break;
+            case 'End':
+                setTabActiveTemp(localTabs.length - 1);
+                if (tabsRef.current[tabActiveTemp]) {
+                    tabsRef.current[tabActiveTemp]!.focus();
+                }
+                break;
+            case 'Escape':
+                setTabActiveTemp(tabActive)
+                if (tabsRef.current[tabActiveTemp]) {
+                    tabsRef.current[tabActiveTemp]!.focus();
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
     return (
         <section
             class="tabs-container">
             {/* Aqui van los labels del tab */}
-            <div class="tabs-label" role={'tablist'}>
+            <div
+                class="tabs-label"
+                role={'tablist'}>
                 {localTabs.map((tab, index) => (
                     <button
                         // class={`tab-label ${tab.isActive ? 'active' : ''}`}
-                        class={`tab-label ${index === tabActive ? 'active' : ''}`}
+                        class={`tab-label 
+                            ${(index === tabActive || index === tabActiveTemp) ? 'active' : ''} `}
+                        tabIndex={index === tabActive ? 0 : -1}
                         id={`tab-${tab.id}`}
                         key={tab.id}
                         role={'tab'}
                         onClick={() => {
                             // Aquí puedes manejar el cambio de pestaña
                             setTabActive(index)
+                            setTabActiveTemp(index)
                         }}
+                        // onFocus={() => {
+                        //     tabsRef
+                        // }}
+                        onKeyDown={handleKeyDownTab}
+                        ref={(el) => tabsRef.current[index] = el}
                         aria-selected={index === tabActive}
                         aria-controls={`panel-${tab.id}`}
-                        tabIndex={index === tabActive ? 0 : -1}
+                        // tabIndex={index === tabActive ? 0 : -1}
                         draggable={true}
                         onDragStart={(e) => handleDragStart(e as DragEvent, index)}
                         onDragOver={(e) => handleDragEnd(e)}
@@ -107,8 +174,8 @@ const Tabs = (
                             key={tab.id}
                             class={`tab-content ${index === tabActive ? 'active' : 'inactive'}`}
                             role="tabpanel"
-                            id={`panel-${tabs[tabActive].id}`}
-                            aria-labelledby={`tab-${tabs[tabActive].id}`}
+                            id={`panel-${tab.id}`}
+                            aria-labelledby={`tab-${tab.id}`}
                         >
                             {tab.content}
                         </div>
