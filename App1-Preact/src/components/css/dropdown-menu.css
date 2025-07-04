@@ -1,0 +1,65 @@
+/* CSs para el drop dowm menu personalizado */
+:root {}
+
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.dropdown-container {
+    /* border: 1px solid red; */
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 40px;
+}
+
+.dropdown-trigger {
+    display: flex;
+    /* border: 1px solid red; */
+
+}
+
+.dropdown-trigger button {
+    width: 100%;
+    border: none;
+    background-color: inherit;
+    padding: 2px 0;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 25px;
+}
+
+.arrowdown {
+    transition: transform 0.35s ease-in;
+}
+
+.arrowdown-rotate {
+    transform: rotate(180deg);
+}
+
+.dropdown-optionslist {
+    border: 1px solid orange;
+    position: absolute;
+    width: 100%;
+    top: 100%;
+    display: none;
+    background-color: white;
+    z-index: 0;
+}
+
+.dropdown-optionslist.activate {
+    display: block;
+    z-index: 10;
+}
+
+.dropdown-option {
+    background-color: gray;
+    padding: 1px 5px;
+    cursor: pointer;
+    margin: 1px 0px;
+}
