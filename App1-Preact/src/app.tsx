@@ -1,4 +1,4 @@
-import { CustomDropDown } from './CustomDropDown'
+import { CustomDropDown } from '@/CustomDropDown'
 import './app.css'
 
 export function App() {

@@ -1,4 +1,4 @@
-import { Dropdownmenu } from "./components/DropDownMenu"
+import { Dropdownmenu } from "@/components/DropDownMenu"
 
 export const CustomDropDown = () => {
     return (
