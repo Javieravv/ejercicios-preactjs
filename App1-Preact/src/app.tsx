@@ -1,5 +1,5 @@
+import { CustomDropDown } from './CustomDropDown'
 import './app.css'
-import CustomTabs from './CustomTabs'
 
 export function App() {
    return (
@@ -9,7 +9,7 @@ export function App() {
             <p>Esta es una aplicación de ejemplo usando Preact.</p>
             <p>Explora los componentes y funcionalidades.</p>
          </section>
-         <CustomTabs />
+         <CustomDropDown />
          
       </>
    )
