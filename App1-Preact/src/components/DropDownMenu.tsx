@@ -1,13 +1,13 @@
 import '@/components/css/dropdown-menu.css'
 import { useClickOutside } from '@/components/hooks/useClickOutside';
 import type { JSX, KeyboardEvent } from 'preact/compat';
-import { useRef, useState } from 'preact/hooks'
+import { useEffect, useRef, useState } from 'preact/hooks'
 
 export interface OptionMenu {
     id: string;
     label: string;
     url: string;
-    render?: (opt: any) => JSX.Element;
+    render?: JSX.Element;
 }
 
 interface DropDownProps {
@@ -45,30 +45,56 @@ export const Dropdownmenu = ({
     optionsMenu = []
 }: DropDownProps) => {
     const [isOpen, setIsOpen] = useState(false)
+    const [optionActive, setOptionActive] = useState(0)
     const menuRef = useRef<HTMLDivElement>(null)
     const optionsRef = useRef<HTMLUListElement>(null)
     const optionsMenuRef = useRef<(HTMLLIElement | null)[]>([])
-    const [optionActive, setOptionActive] = useState(0)
+    const triggerRef = useRef<HTMLButtonElement>(null)
+
+    useEffect(() => {
+        if (!isOpen) triggerRef.current?.focus()
+    }, [isOpen])
+
 
     // Al detectar click fuera, cerramos el menú
     useClickOutside(menuRef, () => {
         setIsOpen(false)
     })
 
+    // Al detectar cuando la ventana pierde el foco
+    useEffect(() => {
+        const handleVisibilityChange = () => {
+            if (!document.hidden) {
+                console.log('LA VENTANA PERDIO EL FOCO')
+                setIsOpen(false)
+            }
+        }
+        document.addEventListener('visibilitychange', handleVisibilityChange)
+        return () => {
+            document.removeEventListener('visibilitychange', handleVisibilityChange)
+        }
+    }, [])
+
+
+    // dentro de tu componente Dropdownmenu
+
+    // 1. Cada vez que abrimos el menú, ponemos el foco en la opción activa (por defecto, la 0)
+    useEffect(() => {
+        if (isOpen && optionsMenuRef.current[optionActive]) {
+            optionsMenuRef.current[optionActive]!.focus()
+        }
+    }, [isOpen, optionActive])
+
+
     // Manejamos el uso de teclado en el componente para el contenedor principal
     const handleKeyDownDropDown = (e: JSX.TargetedKeyboardEvent<HTMLDivElement>) => {
-        console.log(e.key)
         switch (e.key) {
             case 'Enter':
-                const newIsOpen = !isOpen
-                setIsOpen(newIsOpen)
-                if (newIsOpen && optionsMenuRef.current[optionActive]) {
-                    console.log('Entramos por aqui...')
-                    console.log(optionsMenuRef.current[optionActive])
-                    optionsRef.current!.focus()
-                    optionsMenuRef.current[optionActive].focus()
-                }
+                e.preventDefault()
+                setIsOpen(!isOpen)
+                setOptionActive(0)     // arrancamos siempre en la primera opción
                 break;
+            case 'Escape':
             case 'Tab':
                 setIsOpen(false)
                 break;
@@ -79,26 +105,37 @@ export const Dropdownmenu = ({
 
     // Manejamos el uso de teclado en los li del componente
     const handleKeyDownOptionDropDown = (e: JSX.TargetedKeyboardEvent<HTMLLIElement>) => {
-        console.log(e.key)
         switch (e.key) {
             case 'Tab':
-                console.log('Tab en elemento click')
                 setIsOpen(false)
                 break;
             case 'ArrowUp':
+                e.preventDefault()
                 const newOptionIndex1 = optionActive === 0 ? optionsMenu.length - 1 : optionActive - 1
                 setOptionActive(newOptionIndex1)
                 optionsMenuRef.current[newOptionIndex1]!.focus()
                 break;
             case 'ArrowDown':
+                e.preventDefault()
                 const newOptionIndex = optionActive === optionsMenu.length - 1 ? 0 : optionActive + 1
                 setOptionActive(newOptionIndex)
                 optionsMenuRef.current[newOptionIndex]!.focus()
                 break;
+            case 'Enter':
+                console.log('Dimos Enter en una opcion')
+                // e.preventDefault()
+                optionsMenuRef.current[optionActive]!.click()
+                setIsOpen(false)
+                break
+            case 'Escape':
+                setIsOpen(false)
+                break
             default:
                 break;
         }
     }
+
+    console.log('EL VALOR DE ISOPEN ES ', isOpen)
 
     return (
         <div
@@ -111,11 +148,15 @@ export const Dropdownmenu = ({
                 tabIndex={0}
             >
                 <button
-                    onClick={() => setIsOpen(!isOpen)}
+                    onClick={() => {
+                        setOptionActive(-1)
+                        setIsOpen(!isOpen)
+                    }}
                     aria-haspopup="menu"
                     aria-expanded={isOpen}
                     aria-controls="dropdown-list"
                     tabIndex={-1}
+                    ref={triggerRef}
                 // tabindex={0}
                 >
                     {labelMenu}
@@ -146,7 +187,7 @@ export const Dropdownmenu = ({
                                     tabIndex={index === optionActive ? 0 : -1}
                                     onKeyDown={handleKeyDownOptionDropDown}
                                 >
-                                    {option.label}
+                                    <>{option.render ? option.render : option.label}</>
                                 </li>
                             })
                         }

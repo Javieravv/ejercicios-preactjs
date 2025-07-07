@@ -4,22 +4,35 @@ const menuPaises: OptionMenu[] = [
     {
         id: 'pais1',
         label: 'Colombia',
-        url: ''
+        url: '',
+        render: <a href={`https://es.wikipedia.org/wiki/Colombia`} target={`_blank`} >Colombia</a>
     },
     {
         id: 'pais2',
         label: 'Venezuela',
-        url: ''
+        url: '',
+        render: <a href={`https://es.wikipedia.org/wiki/venezuela`} target={`_blank`} >Venezuela</a>
     },
     {
         id: 'pais3',
         label: 'Ecuador',
-        url: ''
+        url: '',
+        render: <a href={`https://es.wikipedia.org/wiki/ecuador`} target={`_blank`} >Ecuador</a>
+
     },
     {
         id: 'pais4',
         label: 'Peru',
-        url: ''
+        url: '',
+        render: <a href={`https://es.wikipedia.org/wiki/Peru`} target={`_blank`} >Perú</a>
+
+    },
+    {
+        id: 'pais5',
+        label: 'Bolivia',
+        url: '',
+        render: 
+            <a href={`https://es.wikipedia.org/wiki/bolivia`} target={`_blank`} >Bolivia</a>
     },
 ]
 

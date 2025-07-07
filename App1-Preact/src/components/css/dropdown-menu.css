@@ -3,6 +3,11 @@
     --bgColorOption: orangered;
 }
 
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
 ul {
     list-style: none;
     padding: 0;
@@ -17,6 +22,7 @@ ul {
     width: 100%;
     height: auto;
 }
+
 
 
 .dropdown-trigger {

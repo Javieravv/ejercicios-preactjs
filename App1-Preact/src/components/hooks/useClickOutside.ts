@@ -8,13 +8,14 @@ import { useEffect } from 'preact/hooks'
  */
 export function useClickOutside<T extends HTMLElement>(
     ref: RefObject<T>,
-    handler: (event: MouseEvent) => void
+    handler: (event: MouseEvent | undefined) => void
 ) {
     useEffect(() => {
         const listener = (e: MouseEvent) => {
             const el = ref.current
             // Si no hay elemento o el click está dentro, no hacemos nada
             if (!el || el.contains(e.target as Node)) return
+            console.log('ejecutamos la fncion y pasamos isopen a false en el useeffect')
             handler(e)
         }
 
