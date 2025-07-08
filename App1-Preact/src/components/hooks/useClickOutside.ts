@@ -15,7 +15,6 @@ export function useClickOutside<T extends HTMLElement>(
             const el = ref.current
             // Si no hay elemento o el click está dentro, no hacemos nada
             if (!el || el.contains(e.target as Node)) return
-            console.log('ejecutamos la fncion y pasamos isopen a false en el useeffect')
             handler(e)
         }
 

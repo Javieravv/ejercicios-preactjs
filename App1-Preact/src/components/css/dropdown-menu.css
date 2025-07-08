@@ -60,13 +60,16 @@ ul {
     top: 100%;
     margin-top: 10px;
     display: none;
+    opacity: 0;
     background-color: white;
     z-index: 0;
     border-radius: 4px;
 }
 
 .dropdown-optionslist.activate {
+    transition: display 0.55s ease allow-discrete;
     display: block;
+    opacity: 1;
     z-index: 10;
 }
 
@@ -75,8 +78,11 @@ ul {
     padding: 1px 5px;
     cursor: pointer;
     margin: 1px 0px;
+    display: grid;
+    flex: 1;
 }
 
-.dropdown-option:hover, .dropdown-option:focus {
+.dropdown-option:hover,
+.dropdown-option:focus {
     background-color: var(--bgColorOption);
 }

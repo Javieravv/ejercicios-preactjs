@@ -1,6 +1,6 @@
 import '@/components/css/dropdown-menu.css'
 import { useClickOutside } from '@/components/hooks/useClickOutside';
-import type { JSX, KeyboardEvent } from 'preact/compat';
+import type { JSX } from 'preact/compat';
 import { useEffect, useRef, useState } from 'preact/hooks'
 
 export interface OptionMenu {
@@ -13,7 +13,6 @@ export interface OptionMenu {
 interface DropDownProps {
     labelMenu: string;
     optionsMenu?: OptionMenu[]
-
 }
 
 // Creamos el icono de la flecha
@@ -47,7 +46,6 @@ export const Dropdownmenu = ({
     const [isOpen, setIsOpen] = useState(false)
     const [optionActive, setOptionActive] = useState(0)
     const menuRef = useRef<HTMLDivElement>(null)
-    const optionsRef = useRef<HTMLUListElement>(null)
     const optionsMenuRef = useRef<(HTMLLIElement | null)[]>([])
     const triggerRef = useRef<HTMLButtonElement>(null)
 
@@ -65,7 +63,7 @@ export const Dropdownmenu = ({
     useEffect(() => {
         const handleVisibilityChange = () => {
             if (!document.hidden) {
-                console.log('LA VENTANA PERDIO EL FOCO')
+
                 setIsOpen(false)
             }
         }
@@ -122,7 +120,6 @@ export const Dropdownmenu = ({
                 optionsMenuRef.current[newOptionIndex]!.focus()
                 break;
             case 'Enter':
-                console.log('Dimos Enter en una opcion')
                 // e.preventDefault()
                 optionsMenuRef.current[optionActive]!.click()
                 setIsOpen(false)
@@ -134,8 +131,6 @@ export const Dropdownmenu = ({
                 break;
         }
     }
-
-    console.log('EL VALOR DE ISOPEN ES ', isOpen)
 
     return (
         <div
@@ -165,7 +160,7 @@ export const Dropdownmenu = ({
                         <span>
                             <DownArrow
                                 sizeArrow={24}
-                                classArrow={`${isOpen && 'arrowdown-rotate'} arrowdown`} />
+                                classArrow={`${isOpen ? 'arrowdown arrowdown-rotate' : 'arrowdown'}`} />
                         </span>
                     }
                 </button>
@@ -174,9 +169,9 @@ export const Dropdownmenu = ({
                 optionsMenu.length > 0 && (
                     <ul
                         class={`dropdown-optionslist ${isOpen && 'activate'}`}
-                        role={`menu`}
+                        role="menu"
                         tabIndex={0}
-                        ref={optionsRef}
+                        aria-labelledby="dropdown-trigger"
                     >
                         {
                             optionsMenu.map((option, index) => {
@@ -186,6 +181,7 @@ export const Dropdownmenu = ({
                                     ref={(el) => optionsMenuRef.current[index] = el}
                                     tabIndex={index === optionActive ? 0 : -1}
                                     onKeyDown={handleKeyDownOptionDropDown}
+                                    role="menuitem"
                                 >
                                     <>{option.render ? option.render : option.label}</>
                                 </li>
