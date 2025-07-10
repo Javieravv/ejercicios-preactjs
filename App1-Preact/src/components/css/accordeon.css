@@ -1,0 +1,59 @@
+/* Css para el componente acordeón personalizado */
+:root {
+
+}
+
+.accordeon-wraper {
+    width: 100%;
+    padding: 5px;
+    border-radius: 8px;
+    background-color: rgb(235, 242, 242);
+}
+
+.accordeon-details {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.5;
+    border-radius: 8px;
+    margin-bottom: 4px;
+}
+
+.accordeon-sumary {
+    border: 2px solid blue;
+    background-color: blue;
+    color: white;
+    padding: 5px;
+    list-style: none;
+    cursor: pointer;
+    position: relative;
+    min-height: 60px;
+}
+
+.accordeon-sumary::before {
+    content: '+'; 
+    display: inline-block;
+    margin-right: 0.5em;
+    transition: transform 0.5s ease;
+    position: absolute;
+    right: 1cqmax;
+  }
+  .accordeon-details[open] .accordeon-sumary::before {
+    /* transform: rotate(90deg); */
+    content: '-'; 
+  }
+
+  .accordeon-content {
+    max-height: 0;
+    overflow: hidden;
+    /* transition: max-height 0.8s ease-out; */
+  }
+
+  .accordeon-details[open] .accordeon-content {
+    /* max-height: 1000px; */
+  }
+
+.accordeon-paragraph {
+    background-color: rgb(203, 226, 243);
+    font-size: 1.2rem;
+    padding: 3px;
+}

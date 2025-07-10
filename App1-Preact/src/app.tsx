@@ -1,4 +1,4 @@
-import { CustomDropDown } from '@/CustomDropDown'
+import CustomAcordeon from '@/CustomAcordeon'
 import './app.css'
 
 export function App() {
@@ -9,8 +9,7 @@ export function App() {
             <p>Esta es una aplicación de ejemplo usando Preact.</p>
             <p>Explora los componentes y funcionalidades.</p>
          </section>
-         <CustomDropDown />
-         
+         <CustomAcordeon />
       </>
    )
 }
